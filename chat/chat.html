@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Чат</title>
+	<link rel="stylesheet" href="style.css" />
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+
+	<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+
+    <script type="text/javascript" src="js/handlebars-v4.0.5.js"></script>
+
+
+</head>
+<script id="tmpl_user_list" type="text/x-handlebars-template">
+
+        <ul id="user_list">
+            {{#each users}}
+            <li class="user_item" id="{{id}}" user-name="{{name}}">{{name}}</li>
+            {{/each}}
+        </ul>
+
+</script>
+
+<script id="tmpl_msg_history" type="text/x-handlebars-template">
+    {{#each messages}}
+        {{#if isOutcoming}}
+            <div class="msg-wrapper right">
+                <span class="date-caption" msg-id="{{msg_id}}">{{create_date}}</span>
+                {{#if isReaded}}
+
+                    <div class="msg-text out_msg" msg-id="{{msg_id}}">{{msg_text}}</div>
+                {{else}}
+                    <div class="msg-text out_msg unread_msg" msg-id="{{msg_id}}">{{msg_text}}</div>
+                {{/if}}
+
+            </div>
+        {{else}}
+            <div class="msg-wrapper left">
+                <div class="msg-text in_msg">{{msg_text}}</div>
+                <span class="date-caption">{{create_date}}</span></div>
+            </div>
+        {{/if}}
+    {{/each}}
+</script>
+
+<div style="width: 800px;">
+
+    <div id="cont_user_list">
+    </div>
+
+<div style="float: right;">
+<div id="dialog" title="Выбрать пользователя">
+	<select style="margin: 5px" id="fromUser">
+	</select>
+</div>
+
+<div style="width: 500px;">
+
+    <div style="width: 100%; display: table; margin:5px; background: #6383a8; height: 30px;">
+
+       <!-- <select id="toUser" style="display: table-cell; margin-top: 7px; margin-left: 5px;">
+            <option id="-1">&#45;&#45;</option>
+        </select>-->
+
+        <div class="user_name" style="display: table-cell; text-align: right">
+            <span >Я:</span>
+            <span id="userName"></span>
+        </div>
+    </div>	
+  
+    <div id="history" page-index="0">
+
+    </div>
+</div>
+
+<div>
+	<textarea id="msgField" style="margin: 5px;" class="editable_field" placeholder="Введите сообщение..."></textarea>	
+</div>
+
+<div style="height: 20px">
+	<span id="status" ></span>
+</div>
+<div>
+<input  class="flat_button" type="button" id="btnSend" value="Отправить" disabled="disabled"/>
+</div>
+</div>
+</div>
+
+</div>
+
+<script type="text/javascript" src="js/script.js"></script>
+ 
+</body>
+
+</html>
