@@ -1,4 +1,7 @@
 <?php
+
+//session_start();
+//SSID
 # Соединямся с БД 
 include("settings.php");
 $mysqli = new mysqli($hostName, $userName, $password, $dbName);
@@ -17,13 +20,23 @@ if (isset($_COOKIE['id']) and isset($_COOKIE['hash']))
 	{
 		setcookie("id", "", time() - 3600*24*30*12, "/");
 		setcookie("hash", "", time() - 3600*24*30*12, "/");
+
 		print "Хм, что-то не получилось";
 	}
 	else {
-		print "Привет, ".$userdata['user_login'].". Всё работает!";
+	//	print "Привет, ".$userdata['user_login'].". Всё работает!";
+		include("index.html");
 	}
 }
 else{
-	print "Включите куки";
-} 
+//	print "Включите куки";
+	include("login.php");
+}
+
+/*$_SESSION['id'] = '1';
+$_SESSION['hash'] = 'sdkljfgakl;djfg';*/
+
+
+/*echo '<pre>';
+print_r($_SESSION);*/
 ?> 

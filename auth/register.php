@@ -1,65 +1,41 @@
 <?php
 
-ini_set('error_reporting', E_ALL);
+include ("auth.class.php");
+
+/*ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+ini_set('display_startup_errors', 1);*/
 
-// Страница регситрации нового пользователя 
-
-# Соединямся с БД 
-include("settings.php");
-$mysqli = new mysqli($hostName, $userName, $password, $dbName);
-
+// Страница регситрации нового пользователя
 
 if(isset($_POST['submit'])) 
-{ 
-$err = array(); 
+{
+   $login = $_POST['login'];
+   $password = $_POST['password'];
+   $auth = new Auth($login, $password);
 
-# проверям логин 
-if(!preg_match("/^[a-zA-Z0-9]+$/",$_POST['login'])) {
- $err[] = "Логин может состоять только из букв английского алфавита и цифр";
-} 
+  # Если нет ошибок, то добавляем в БД нового пользователя
+   $err = $auth->Check();
+   if(count($err) == 0) {
 
-if(strlen($_POST['login']) < 3 or strlen($_POST['login']) > 30) {
- $err[] = "Логин должен быть не меньше 3-х символов и не больше 30";
-} 
-
-# проверяем, не сущестует ли пользователя с таким именем
-$sql = "SELECT COUNT(user_id) AS CNT FROM auth_users WHERE user_login='".$mysqli->real_escape_string($_POST['login'])."'";
-$result = $mysqli->query($sql);
-$data = mysqli_fetch_assoc($result);
-//if(mysql_result($query, 0) > 0) 
-if ($data['CNT']){
-	$err[] = "Пользователь с таким логином уже существует в базе данных"; 
-} 
-
-# Если нет ошибок, то добавляем в БД нового пользователя 
-if(count($err) == 0) 
-{ 
-
- $login = $_POST['login'];
-
- # Убераем лишние пробелы и делаем двойное шифрование
- $password = md5(md5(trim($_POST['password'])));
-
- //mysql_query("INSERT INTO users SET user_login='".$login."', user_password='".$password."'");
- $sql = "INSERT INTO auth_users SET user_login='".$login."', user_password='".$password."'";
- $mysqli->query($sql);
- header("Location: login.php"); exit();
- }
- else
- {
-  print "При регистрации произошли следующие ошибки:
-  ";
-  foreach($err AS $error) {
-    print $error."\n";
+     $auth->Register();
+     //header("Location: login.php"); exit();
+     header("Location: check.php"); exit();
+   }
+  else {
+    print "При регистрации произошли следующие ошибки:
+    ";
+    foreach($err AS $error) {
+      print $error."\n";
   }
  }
 } 
-?> 
-
- <form method="POST"> 
+?>
+<span>Регистрация</span>
+<form method="POST">
  Логин <input name="login" type="text">Пароль <input name="password" type="password">
- <input name="submit" type="submit" value="Зарегистрироваться"> 
- </form> 
+ <input name="submit" type="submit" value="Зарегистрироваться">
+</form>
+<div><a href="login.php">Войти</a></div>
+
  
