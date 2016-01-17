@@ -1,0 +1,5 @@
+<ul id="user_list">
+{% for user in users %}
+    <li class="user_item" id="{{ user.id }}" user-name="{{ user.name }}">{{ user.name }}</li>
+{% endfor %}
+</ul>
