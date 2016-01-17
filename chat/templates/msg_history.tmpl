@@ -1,0 +1,18 @@
+{% for msg in messages %}
+    {% if msg.is_outcoming %}
+        <div class="msg-wrapper right">
+        <span class="date-caption" msg-id="{{ msg.msg_id }}">{{ msg.create_date }}</span>
+        {% if msg.isReaded %}
+            <div class="msg-text out_msg" msg-id="{{ msg.msg_id }}">{{ msg.msg_text }}</div>
+        {% else %}
+            <div class="msg-text out_msg unread_msg" msg-id="{{ msg.msg_id }}">{{ msg.msg_text }}</div>
+        {% endif %}
+
+        </div>
+    {% else %}
+        <div class="msg-wrapper left">
+        <div class="msg-text in_msg">{{ msg.msg_text }}</div>
+        <span class="date-caption">{{ msg.create_date }}</span></div>
+    </div>
+    {% endif %}
+{% endfor %}

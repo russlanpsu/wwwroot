@@ -4,17 +4,51 @@ var msgIndex = 0;
 $(function(){
 
 	var users;
-	
-	$.post("history.php",
+	update();
+	updateIntervalId = setInterval(function(){update()}, 5000);
+	/*$.post("history.php",
 		{action: "getUsers"},
-		function(data){		
-						
-			users = JSON.parse(data);
-			CreateUsersList_old("fromUser", users);
-			
-		});
+		function(data){
 
-	$('#dialog').dialog({
+			var fromUserId = getCurrentUserId();
+
+			users = JSON.parse(data);
+		//	CreateUsersList_old("fromUser", users);
+
+			if (!(fromUserId === undefined)){
+				CreateUsersList(users, fromUserId);
+
+				update();
+				updateIntervalId = setInterval(function(){update()}, 5000);
+			}
+
+			
+		});*/
+
+	$('.user_item').click(function(){
+
+		var $activeUser = $('.active_user');
+		if ($activeUser.length > 0){
+			$($activeUser[0]).removeClass('active_user');
+		};
+
+		var $this = $(this);
+		$this.addClass('active_user');
+		$this.html($this.attr('user-name'));
+
+		$('#history').attr('page-index', 0);
+
+		getHistory();
+	//	$('#history').html(getRenderedHistory(0));
+
+		if (!(updateIntervalId === undefined)){
+			clearInterval(updateIntervalId);
+		}
+		updateIntervalId = setInterval(function(){update()}, 5000);
+
+	});
+
+/*	$('#dialog').dialog({
 		modal:true,		
 		buttons:{
 			'OK':function(){
@@ -33,7 +67,7 @@ $(function(){
 				$(this).dialog('close');
 			}
 		}
-	});
+	});*/
 	
 	$('#btnSend').click(function(){
 		sendMessage();
@@ -75,7 +109,7 @@ $(function(){
 
 });
 
-function CreateUsersList_old(targetListId, users, excludedUserId){
+/*function CreateUsersList_old(targetListId, users, excludedUserId){
 	
 	if (excludedUserId === undefined){
 		excludedUserId = -1;
@@ -91,13 +125,14 @@ function CreateUsersList_old(targetListId, users, excludedUserId){
             fromUserList.appendChild(optionItem);
         }
     }
-}
+}*/
 
 function renderTemplate(tmplId, target, context, appendKind){
 	var $tmpl = $('#' + tmplId);
 
 	var template = Handlebars.compile($tmpl.html());
 	var rendered = template(context);
+
 
 	var $target = $('#' + target);
 
@@ -129,7 +164,7 @@ function renderTemplate(tmplId, target, context, appendKind){
 	}
 }
 
-function CreateUsersList(users, excludedUserId){
+/*function CreateUsersList(users, excludedUserId){
 
 	if (excludedUserId === undefined){
 		excludedUserId = -1;
@@ -168,7 +203,7 @@ function CreateUsersList(users, excludedUserId){
 
 	})
 
-};
+};*/
 
 
 function sendMessage(){
@@ -185,11 +220,13 @@ function sendMessage(){
 	$msgField.val('');
 	$('#btnSend').attr('disabled', true);
 
-	var $fromUser = $('#fromUser option:selected');
+//	var $fromUser = $('#fromUser option:selected');
 //	var $toUser = $("#toUser option:selected");
 	var $toUser = $($('.active_user')[0]);
 	
-	var fromUserId = $fromUser.attr('id');
+//	var fromUserId = $fromUser.attr('id');
+	var fromUserId = getCurrentUserId();
+
 	var toUserId = $toUser.attr('id');
 
 	msgIndex++;
@@ -211,14 +248,11 @@ function sendMessage(){
 
 	$(".unread_msg[msg-id='" + msg.msg_id + "']").before(imgEl);
 
-
-
 	$.post('history.php',
 			{action: 'insertMessage',
 				fromUser: fromUserId,
 				toUser: toUserId,
 				msg: msgText},
-
 
 			function(data){
 
@@ -256,6 +290,7 @@ function appendMessagesToHistory(messages, fromUserId, appendKind){
 	var context = {messages: messages};
 	renderTemplate('tmpl_msg_history', 'history', context, appendKind);
 
+
 }
 
 function updateIncomingMessagesCount(messagesCount){
@@ -274,11 +309,13 @@ function updateIncomingMessagesCount(messagesCount){
 
 function getHistory(pageIndex){
 	var result;
-	var $fromUser = $("#fromUser option:selected");
+//	var $fromUser = $("#fromUser option:selected");
 //	var $toUser = $("#toUser option:selected");
 	var $toUser = $($('.active_user')[0]);
 
-	var fromUserId = $fromUser.attr('id');
+//	var fromUserId = $fromUser.attr('id');
+	var fromUserId = getCurrentUserId();
+
 	var toUserId = $toUser.attr('id');
 
 	/*$.post('history.php',
@@ -371,8 +408,9 @@ function setUsersOnline(userIds){
 
 function update(){
 
-	var $fromUser = $("#fromUser option:selected");
-	var fromUserId = $fromUser.attr('id');
+//	var $fromUser = $("#fromUser option:selected");
+//	var fromUserId = $fromUser.attr('id');
+	var fromUserId = getCurrentUserId();
 
 	var $activeUser = $('.active_user');
 	if ($activeUser.length > 0){
@@ -414,4 +452,43 @@ function update(){
 
 		}
 	);
+}
+
+function getCurrentUserId(){
+	return getCookie('id');
+}
+
+function getCookie(name) {
+	var value = "; " + document.cookie;
+	var parts = value.split("; " + name + "=");
+	if (parts.length == 2) return parts.pop().split(";").shift();
+}
+
+function getRenderedHistory(pageIndex){
+
+	var fromUserId = getCurrentUserId();
+
+	var $activeUser = $('.active_user');
+	if ($activeUser.length > 0){
+		var $toUser = $($activeUser[0]);
+		var toUserId = $toUser.attr('id');
+	}
+
+	var data = {action: 'getRenderedHistory',
+				fromUser: fromUserId,
+				toUser: toUserId,
+				historyPageIndex: pageIndex};
+	var receivedData = '';
+	$.ajax({
+		type: 		'POST',
+		url: 		'history.php',
+		data: 		data,
+		async: 		false,
+		success:	function(data){
+					//	receivedData = JSON.parse(data);
+						receivedData = data;
+					}
+
+	});
+	return receivedData;
 }

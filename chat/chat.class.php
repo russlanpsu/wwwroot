@@ -16,7 +16,7 @@ class Chat
     public function __construct(){
 
         include "settings.php";
-        $this->mysqli = new mysqli($hostName, $userName, $password, $dbName);
+        $this->mysqli = new mysqli($dbHostName, $dbUserName, $dbPassword, $dbName);
 
     }
 
@@ -172,7 +172,7 @@ class Chat
     }
 
     public function insertMessage($fromUser, $toUser, $msg){
-        sleep(mt_rand(2, 4));
+    //    sleep(mt_rand(2, 4));
 
         $this->mysqli->query(sprintf( 'INSERT INTO messages
 								        (msg_text, to_user, from_user, create_date)
@@ -204,6 +204,26 @@ class Chat
 
         return $messagesCount;
 
+    }
+
+    public function getRenderedHistory($curUser, $companion, $pageIndex){
+        require_once '../PHP/vendor/twig/twig/lib/Twig/Autoloader.php';
+        Twig_Autoloader::register();
+
+        // указывае где хранятся шаблоны
+        $loader = new Twig_Loader_Filesystem('templates');
+
+        // инициализируем Twig
+        $twig = new Twig_Environment($loader);
+
+        // подгружаем шаблон
+        $template = $twig->loadTemplate('msg_history.tmpl');
+
+        $chat = new Chat();
+        $messages = $chat->getHistory($curUser, $companion, $pageIndex);
+        $context = array('messages'=>$messages);
+
+        echo $template->render($context);
     }
 
 }

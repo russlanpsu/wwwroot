@@ -62,5 +62,11 @@ switch ($action){
 			echo json_encode($msgCount);
 		};
 		break;
+	case "getRenderedHistory":
+		$fromUser = $_POST['fromUser'];
+		$toUser = $_POST['toUser'];
+		$pageIndex = $_POST['historyPageIndex'];
+		$history = $chat->getRenderedHistory($fromUser, $toUser, $pageIndex);
+
 }
 
