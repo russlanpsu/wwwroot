@@ -5,8 +5,12 @@
 # Соединямся с БД 
 //include("settings.php");
 //require_once 'settings.php';
-include("chat.class.php");
-require_once 'auth.class.php';
+//define('ROOT_PATH', str_replace('\\', '/', dirname(__FILE__)) . DIRECTORY_SEPARATOR);
+
+include('/chat.class.php');
+include('/auth/auth.class.php');
+//require_once ROOT_PATH . 'auth\auth.class.php';
+
 
 //$mysqli = new mysqli($dbHostName, $dbUserName, $dbPassword, $dbName);
 
@@ -30,10 +34,12 @@ if (isset($_COOKIE['id']) and isset($_COOKIE['hash']))
 		setcookie("hash", "", time() - 3600*24*30*12, "/");
 
 		print "Хм, что-то не получилось";*/
-		header("Location: auth/login.php"); exit();
+	//	header("Location: {ROOT_PATH} login.php"); exit();
+		include($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'chat/login.php');exit();
 	}
 	else {
-		require_once '../PHP/vendor/twig/twig/lib/Twig/Autoloader.php';
+	//	require_once '../PHP/vendor/twig/twig/lib/Twig/Autoloader.php';
+		require_once '..\PHP\Twig-1.23.3\lib\Twig\Autoloader.php';
 		Twig_Autoloader::register();
 
 		// указываем где хранятся шаблоны
@@ -57,7 +63,9 @@ if (isset($_COOKIE['id']) and isset($_COOKIE['hash']))
 }
 else{
 //	print "Включите куки";
-	include("login.php");
+//	include("login.php");
+//	include(ROOT_PATH . 'auth\login.php');
+	include($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'chat/auth/login.php');
 }
 
 /*$_SESSION['id'] = '1';
