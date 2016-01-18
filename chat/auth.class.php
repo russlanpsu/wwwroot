@@ -22,7 +22,7 @@ class Auth
 //	public function __construct($login, $password)
 	public function __construct()
 	{
-		include('settings.php');
+		include_once('settings.php');
 
 		$this->mysqli = new mysqli($dbHostName, $dbUserName, $dbPassword, $dbName);
 

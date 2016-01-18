@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <p>Hello {{ userName }}</p>
+</body>
+</html>
+
+<script id="tmpl_msg_history" type="text/x-handlebars-template">
+    {{#each messages}}
+    {{#if isOutcoming}}
+    <div class="msg-wrapper right">
+        <span class="date-caption" msg-id="{{msg_id}}">{{create_date}}</span>
+        {{#if isReaded}}
+
+        <div class="msg-text out_msg" msg-id="{{msg_id}}">{{msg_text}}</div>
+        {{else}}
+        <div class="msg-text out_msg unread_msg" msg-id="{{msg_id}}">{{msg_text}}</div>
+        {{/if}}
+
+    </div>
+    {{else}}
+    <div class="msg-wrapper left">
+        <div class="msg-text in_msg">{{msg_text}}</div>
+        <span class="date-caption">{{create_date}}</span></div>
+    </div>
+    {{/if}}
+    {{/each}}
+</script>
+
+<script id="tmpl_user_list" type="text/x-handlebars-template">
+
+    <ul id="user_list">
+        {{#each users}}
+        <li class="user_item" id="{{id}}" user-name="{{name}}">{{name}}</li>
+        {{/each}}
+    </ul>
+
+</script>

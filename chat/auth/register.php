@@ -29,13 +29,5 @@ if(isset($_POST['submit']))
       print $error."\n";
   }
  }
-} 
-?>
-<span>Регистрация</span>
-<form method="POST">
- Логин <input name="login" type="text">Пароль <input name="password" type="password">
- <input name="submit" type="submit" value="Зарегистрироваться">
-</form>
-<div><a href="login.php">Войти</a></div>
-
- 
+}
+include 'register.html';

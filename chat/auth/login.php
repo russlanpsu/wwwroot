@@ -2,7 +2,7 @@
 // Страница авторизации 
 
 //include ("auth.class.php");
-require_once 'auth.class.php';
+include_once 'auth.class.php';
 
 if (isset($_GET['out']) && $_GET['out'] == 1){
 	setcookie("id", "", 0, '/');
@@ -27,10 +27,5 @@ if(isset($_POST['submit'])) {
 	} else {
 		print "Вы ввели неправильный логин/пароль";
 	}
-} 
-?>
-<span>Войти как</span>
-<form method="POST"> Логин <input name="login" type="text">Пароль <input name="password" type="password">Не прикреплять к IP(не безопасно) 
-<input type="checkbox" name="not_attach_ip"><br> <br /><input name="submit" type="submit" value="Войти"></form>
-<div><a href="register.php">Регистрация</a></div>
-
+}
+include 'login.html';
