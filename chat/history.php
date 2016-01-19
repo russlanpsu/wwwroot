@@ -17,11 +17,11 @@ $chat = new Chat();
 
 switch ($action){
 
-	case "getUsers":
+	/*case "getUsers":
 
 		$users = $chat->getUsers();
 		echo json_encode($users);
-		break;
+		break;*/
 
 	case "getHistory":
 

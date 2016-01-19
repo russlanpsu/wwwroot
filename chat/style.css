@@ -208,6 +208,11 @@ ul{
     background-repeat: no-repeat;*/
     cursor: pointer;
     padding-left: 20px;
+    height: 40px;
+}
+
+.last_msg{
+    padding-left: 10px;
 }
 
 .user_item:hover:not(.active_user){

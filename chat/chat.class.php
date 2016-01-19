@@ -157,13 +157,26 @@ class Chat
 
     public function getUsers($excludeUserId = -1){
 
-        $sql = "SELECT id, name FROM users
+       /* $sql = "SELECT id, name FROM users
 				WHERE id <> " . $excludeUserId .
-				" ORDER BY ID";
+				" ORDER BY ID";*/
+
+        $sql = "SELECT
+                    A.id,
+                    name,
+                    (SELECT msg_text FROM messages WHERE id=last_id ) AS last_msg
+                FROM users A
+                LEFT JOIN (SELECT from_user, max(id) AS last_id FROM messages
+                            WHERE to_user=$excludeUserId
+                            GROUP BY from_user) B
+                    ON A.id=B.from_user
+                WHERE A.id <> $excludeUserId
+                ORDER BY A.ID";
 
         $result = $this->mysqli->query($sql);
         $users = array();
         while ($row = mysqli_fetch_assoc($result)) {
+        //    $row['last_msg'] = 'this is last message of user';
             $users[] = $row;
         };
 

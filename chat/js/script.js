@@ -464,6 +464,7 @@ function getCookie(name) {
 	if (parts.length == 2) return parts.pop().split(";").shift();
 }
 
+/*
 function getRenderedHistory(pageIndex){
 
 	var fromUserId = getCurrentUserId();
@@ -491,4 +492,4 @@ function getRenderedHistory(pageIndex){
 
 	});
 	return receivedData;
-}
+}*/
