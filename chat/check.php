@@ -1,7 +1,7 @@
 <?php
 
-include_once '/chat.class.php';
-include_once '/auth/auth.class.php';
+include_once 'chat.class.php';
+include_once 'auth/auth.class.php';
 include_once 'settings.php';
 
 if (isset($_COOKIE['id']) and isset($_COOKIE['hash'])) 
