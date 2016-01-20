@@ -133,6 +133,10 @@ function renderTemplate(tmplId, target, context, appendKind){
 	var template = Handlebars.compile($tmpl.html());
 	var rendered = template(context);
 
+//	var ptrn = /(?:(?:https?|ftp|telnet)://(?:[a-z0-9_-]{1,32}(?::[a-z0-9_-]{1,32})?@)?)?(?:(?:[a-z0-9-]{1,128}\.)+(?:ru|su|com|net|org|mil|edu|arpa|gov|biz|info|aero|inc|name|[a-z]{2})|(?!0)(?:(?!0[^.]|255)[0-9]{1,3}\.){3}(?!0|255)[0-9]{1,3})(?:/[a-z0-9.,_@%&?+=\~/-]*)?(?:#[^ '\"&]*)?'/gi;
+	var ptrn = /([0-9]+)/;
+
+	rendered = rendered.replace(ptrn, 'digit');
 
 	var $target = $('#' + target);
 
@@ -300,7 +304,8 @@ function updateIncomingMessagesCount(messagesCount){
 		for(var i=0; i<messagesCount.length; i++){
 			var item=messagesCount[i];
 			if (userId == item.user_id){
-				$this.html($this.attr('user-name') + ' (' + item.msgs_count + ')');
+			//	$this.html($this.attr('user-name') + ' (' + item.msgs_count + ')');
+				$($this.find('.msg_count')[0]).html('+' + item.msgs_count);
 				break;
 			}
 		}

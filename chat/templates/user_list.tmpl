@@ -1,7 +1,7 @@
 <ul id="user_list">
 {% for user in users %}
     <li class="user_item" id="{{ user.id }}" user-name="{{ user.name }}">
-        <a href="user.php?id={{ user.id }}"> {{ user.name }}</a>
+        <span> {{ user.name }} </span><span class="msg_count"></span>
         <div class="last_msg">{{ user.last_msg }}</div>
     </li>
 {% endfor %}

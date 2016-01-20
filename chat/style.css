@@ -213,6 +213,19 @@ ul{
 
 .last_msg{
     padding-left: 10px;
+    padding-top: 2px;
+    font-size: 11px;
+    color: darkgrey;
+    white-space: nowrap; /* Запрещаем перенос строк */
+    overflow: hidden; /* Обрезаем все, что не помещается в область */
+    /*max-width: 180px; !* Ширина*!*/
+    /*height: 50px; !* Высота/*/
+    text-overflow: ellipsis; /* Добавляем многоточие */
+}
+
+.msg_count{
+    font-weight: bold;
+    float: right;
 }
 
 .user_item:hover:not(.active_user){
