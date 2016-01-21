@@ -17,26 +17,35 @@
 <script id="tmpl_msg_history" type="text/x-handlebars-template">
 	{% verbatim %}
 	{{#each messages}}
-	{{#if isOutcoming}}
-	<div class="msg-wrapper right">
-		<span class="date-caption" msg-id="{{msg_id}}">{{create_date}}</span>
-		{{#if isReaded}}
+		{{#if isOutcoming}}
+			<div class="msg-wrapper right">
+				<span class="date-caption" msg-id="{{ msg_id }}">{{ create_date }}</span>
+				{{#if isReaded}}
+					<div class="msg-text out_msg" msg-id="{{ msg_id }}">{{link msg_text }}</div>
+				{{else}}
+					<div class="msg-text out_msg unread_msg" msg-id="{{ msg_id }}">{{link msg_text }}</div>
+				{{/if}}
 
-		<div class="msg-text out_msg" msg-id="{{msg_id}}">{{msg_text}}</div>
+			</div>
 		{{else}}
-		<div class="msg-text out_msg unread_msg" msg-id="{{msg_id}}">{{msg_text}}</div>
+			<div class="msg-wrapper left">
+				<div class="msg-text in_msg">{{link msg_text }}</div>
+				<span class="date-caption">{{ create_date }}</span></div>
+			</div>
 		{{/if}}
-
-	</div>
-	{{else}}
-	<div class="msg-wrapper left">
-		<div class="msg-text in_msg">{{msg_text}}</div>
-		<span class="date-caption">{{create_date}}</span></div>
-	</div>
-	{{/if}}
 	{{/each}}
 	{% endverbatim %}
 </script>
+
+<script>
+	Handlebars.registerHelper('link', function(msg_text) {
+		msg_text = Handlebars.escapeExpression(msg_text);
+		var ptrn =/(ftp|http|https)(:\/\/)((\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?)/gi;
+		msg_text = msg_text.replace(ptrn, '<a href="$1$2$3" target="_blank">$3</a>');
+		return new Handlebars.SafeString(msg_text);
+	});
+</script>
+
 <div style="width: 800px;">
 
     <div id="cont_user_list">

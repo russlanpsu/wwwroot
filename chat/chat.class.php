@@ -204,8 +204,14 @@ class Chat
     }
 
     public function getIncomingMessagesCount($curUser){
-        $sql = "SELECT from_user as user_id, count(from_user) as msgs_count
-                FROM messages
+        $sql = "SELECT
+                  from_user AS user_id,
+                  COUNT(from_user) AS msgs_count,
+                  (SELECT msg_text FROM messages c
+                    WHERE c.id=(SELECT MAX(id) FROM messages b
+                                WHERE b.from_user=a.from_user)
+                    ) AS last_msg
+                FROM messages a
                 WHERE to_user = {$curUser}
                   AND is_readed = 0
                 GROUP BY from_user";
@@ -219,7 +225,7 @@ class Chat
 
     }
 
-    public function getRenderedHistory($curUser, $companion, $pageIndex){
+   /* public function getRenderedHistory($curUser, $companion, $pageIndex){
         require_once '../PHP/vendor/twig/twig/lib/Twig/Autoloader.php';
         Twig_Autoloader::register();
 
@@ -237,6 +243,6 @@ class Chat
         $context = array('messages'=>$messages);
 
         echo $template->render($context);
-    }
+    }*/
 
 }

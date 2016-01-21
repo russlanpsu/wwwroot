@@ -19,7 +19,7 @@ if (isset($_COOKIE['id']) and isset($_COOKIE['hash']))
 
 		print "Хм, что-то не получилось";*/
 	//	header("Location: {ROOT_PATH} login.php"); exit();
-		include($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'chat/login.php');exit();
+		include($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'chat/auth/login.php');exit();
 	}
 	else {
 	//	require_once '../PHP/vendor/twig/twig/lib/Twig/Autoloader.php';

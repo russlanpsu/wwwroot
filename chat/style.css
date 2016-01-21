@@ -1,3 +1,13 @@
+a:hover, a:focus{
+    text-decoration: underline;
+}
+
+a{
+    text-decoration: none;
+    color: #167ac6;
+    cursor: pointer;
+}
+
 .editable_field {
 	width: 490px;
 	height: 50px;

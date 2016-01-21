@@ -34,7 +34,9 @@ $(function(){
 
 		var $this = $(this);
 		$this.addClass('active_user');
-		$this.html($this.attr('user-name'));
+	//	$this.html($this.attr('user-name'));
+		$this.find('.msg_count').html('');
+		$this.find('.last_msg').html('');
 
 		$('#history').attr('page-index', 0);
 
@@ -133,10 +135,9 @@ function renderTemplate(tmplId, target, context, appendKind){
 	var template = Handlebars.compile($tmpl.html());
 	var rendered = template(context);
 
-//	var ptrn = /(?:(?:https?|ftp|telnet)://(?:[a-z0-9_-]{1,32}(?::[a-z0-9_-]{1,32})?@)?)?(?:(?:[a-z0-9-]{1,128}\.)+(?:ru|su|com|net|org|mil|edu|arpa|gov|biz|info|aero|inc|name|[a-z]{2})|(?!0)(?:(?!0[^.]|255)[0-9]{1,3}\.){3}(?!0|255)[0-9]{1,3})(?:/[a-z0-9.,_@%&?+=\~/-]*)?(?:#[^ '\"&]*)?'/gi;
-	var ptrn = /([0-9]+)/;
+//	var ptrn =/(ftp|http|https):\/\/((\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?)/gi;
+//	rendered = rendered.replace(ptrn, '<a href="$1$2" target="_blank">$2</a>');
 
-	rendered = rendered.replace(ptrn, 'digit');
 
 	var $target = $('#' + target);
 
@@ -306,6 +307,7 @@ function updateIncomingMessagesCount(messagesCount){
 			if (userId == item.user_id){
 			//	$this.html($this.attr('user-name') + ' (' + item.msgs_count + ')');
 				$($this.find('.msg_count')[0]).html('+' + item.msgs_count);
+				$($this.find('.last_msg')[0]).html(item.last_msg);
 				break;
 			}
 		}
