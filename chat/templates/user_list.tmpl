@@ -1,6 +1,7 @@
 <ul id="user_list">
 {% for user in users %}
     <li class="user_item" id="{{ user.id }}" user-name="{{ user.name }}">
+        <img src="img\user2.png">
         <span> {{ user.name }} </span><span class="msg_count"></span>
         <div class="last_msg">{{ user.last_msg }}</div>
     </li>

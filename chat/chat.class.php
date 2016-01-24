@@ -138,14 +138,43 @@ class Chat
         return $ids;
     }
 
+    function arraysIsEqual($arr1, $arr2){
+        return ((count(array_diff($arr1, $arr2)) === 0)
+            && (count(array_diff($arr2, $arr1)) === 0));
+    }
+
     public function update($curUser, $companion, $unreadMsgIds){
+
+    //    sleep(10);
+        $maxExecTime = (int) ini_get('max_execution_time');
+        if (($maxExecTime === 0)
+            || ($maxExecTime > 30)) {
+            $maxExecTime = 30;
+        }
+
+
         $unreadMessages = $this->getUnreadMessages($curUser, $companion);
         $unreadMessagesCount = $this->getIncomingMessagesCount($curUser);
         $readMessageIds = $this->getReadedMessageIds($unreadMsgIds);
         $onlineUserIds = $this->getOnlineUserIds($curUser);
 
         $this->setLastActivityDate($curUser);
+        $endTime = time() + $maxExecTime -6;
+    //    for($i=0; $i<100; $i++){
+        while (time()<$endTime){
+            usleep(250000); //  250ms
+            $unreadMessages1 = $this->getUnreadMessages($curUser, $companion);
+            /*$unreadMessagesCount1 = $this->getIncomingMessagesCount($curUser);
+            $readMessageIds1 = $this->getReadedMessageIds($unreadMsgIds);
+            $onlineUserIds1 = $this->getOnlineUserIds($curUser);*/
 
+            if (!$this->arraysIsEqual($unreadMessages1, $unreadMessages)){
+        //    if ($unreadMessages1 != $unreadMessages){
+                $unreadMessages = $unreadMessages1;
+                break;
+            }
+            $unreadMessages = $unreadMessages1;
+        }
         $result = array(
                         "unreadMsgs" => $unreadMessages,
                         "unreadMsgsCount" => $unreadMessagesCount,

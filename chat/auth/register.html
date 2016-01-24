@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
+<script src='https://www.google.com/recaptcha/api.js'></script>
 <body>
 <span>Регистрация</span>
+<span><?php echo $msg; ?></span>
 <form method="POST">
     <div>
     Логин <input name="login" type="text">
@@ -14,7 +16,8 @@
     Пароль <input name="password" type="password">
     </div>
     <input name="submit" type="submit" value="Зарегистрироваться">
+    <div class="g-recaptcha" data-sitekey="6LflFhYTAAAAAFMcFHrwE3TVcimCzPKM2LC7Li5G"></div>
 </form>
-<div><a href="login.php">Войти</a></div>
+<div><a href="auth/login.php">Войти</a></div>
 </body>
 </html>

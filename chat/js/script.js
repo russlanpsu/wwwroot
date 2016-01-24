@@ -1,91 +1,62 @@
 var updateIntervalId;
 var msgIndex = 0;
+var updateRequestEnabled = false;
+var $xhrUpdate;
+
+function setIntervalUpdate(){
+	return setInterval(function(){
+		if (updateRequestEnabled) update();
+	}, 50);
+}
 
 $(function(){
 
-	var users;
 	update();
-	updateIntervalId = setInterval(function(){update()}, 5000);
-	/*$.post("history.php",
-		{action: "getUsers"},
-		function(data){
-
-			var fromUserId = getCurrentUserId();
-
-			users = JSON.parse(data);
-		//	CreateUsersList_old("fromUser", users);
-
-			if (!(fromUserId === undefined)){
-				CreateUsersList(users, fromUserId);
-
-				update();
-				updateIntervalId = setInterval(function(){update()}, 5000);
-			}
-
-			
-		});*/
+	updateIntervalId = setIntervalUpdate();
 
 	$('.user_item').click(function(){
+
+		if (!($xhrUpdate === undefined) && ($xhrUpdate.readyState != 4)){
+			$xhrUpdate.abort();
+			updateRequestEnabled = true;
+		}
 
 		var $activeUser = $('.active_user');
 		if ($activeUser.length > 0){
 			$($activeUser[0]).removeClass('active_user');
-		};
+		}
 
 		var $this = $(this);
 		$this.addClass('active_user');
-	//	$this.html($this.attr('user-name'));
 		$this.find('.msg_count').html('');
-		$this.find('.last_msg').html('');
+		//$this.find('.last_msg').html('');
 
 		$('#history').attr('page-index', 0);
 
 		getHistory();
-	//	$('#history').html(getRenderedHistory(0));
 
 		if (!(updateIntervalId === undefined)){
 			clearInterval(updateIntervalId);
 		}
-		updateIntervalId = setInterval(function(){update()}, 5000);
-
-	});
-
-/*	$('#dialog').dialog({
-		modal:true,		
-		buttons:{
-			'OK':function(){
-												
-				var $fromUser = $('#fromUser option:selected');
-				
-				var fromUserId = $fromUser.attr('id');
-				CreateUsersList(users, fromUserId);
-
-				var fromUserName = $fromUser.text()
-				$('#userName').html(fromUserName);
-
-				update();
-				updateIntervalId = setInterval(function(){update()}, 5000);
-
-				$(this).dialog('close');
-			}
-		}
-	});*/
+		updateIntervalId = setIntervalUpdate();
+		//update();
+	})
 	
 	$('#btnSend').click(function(){
 		sendMessage();
-	});
+	})
 	
 	$('#msgField').keypress(function(event){
 		if (event.which == 13){
 			sendMessage();			
 			event.preventDefault();
-		};		
-	});
+		}
+	})
 	
 	$('#msgField').bind('input propertychange', function() {
 		$('#btnSend').attr('disabled', $(this).val().length == 0);
 		$('#status').html("");
-	});
+	})
 
 	$('#history').scroll(function(){
 
@@ -107,9 +78,9 @@ $(function(){
 
 		}
 
-	});
+	})
 
-});
+})
 
 /*function CreateUsersList_old(targetListId, users, excludedUserId){
 	
@@ -253,35 +224,34 @@ function sendMessage(){
 
 	$(".unread_msg[msg-id='" + msg.msg_id + "']").before(imgEl);
 
-	$.post('history.php',
-			{action: 'insertMessage',
+	$.ajax({
+		type: 'POST',
+		url:'history.php',
+		data:{
+				action: 'insertMessage',
 				fromUser: fromUserId,
 				toUser: toUserId,
-				msg: msgText},
+				msg:msgText
+		},
 
-			function(data){
+		success: function (data) {
 
-				var parsedData = JSON.parse(data);
-				/*var msg = {	msg_id: parsedData.msg_id,
-							from_user: fromUserId,
-							msg_text: msgText,
-							create_date: new Date().toLocaleTimeString(),
-							isOutcoming: true
-						};
+			var parsedData = JSON.parse(data);
 
-				var messages = [msg];
-				appendMessagesToHistory(messages, fromUserId, 'append');*/
+			$(".msg-loading[msg-id='" + msg.msg_id + "']").remove();
+			$(".date-caption[msg-id='" + msg.msg_id + "']").html(parsedData.create_date);
+			$(".unread_msg[msg-id='" + msg.msg_id + "']").attr('msg-id', parsedData.msg_id);
+			$('#status').text('Сообщение отправлено');
 
+			$msgField.attr('disable', false);
 
-				$(".msg-loading[msg-id='" + msg.msg_id + "']").remove();
-				$(".date-caption[msg-id='" + msg.msg_id + "']").html(parsedData.create_date);
-				$(".unread_msg[msg-id='" + msg.msg_id + "']").attr('msg-id', parsedData.msg_id);
-				$('#status').text('Сообщение отправлено');
+		},
 
-				$msgField.attr('disable', false);
+		error: function(jqXHR, textStatus, errorThrown ){
+			$('#status').text('textStatus: ' + textStatus + '; errorThrown: ' + errorThrown);
+		}
 
-			}
-	)
+	})
 }
 
 function appendMessagesToHistory(messages, fromUserId, appendKind){
@@ -435,12 +405,14 @@ function update(){
 				toUser: (toUserId === undefined) ? -1 : toUserId,
 				unreadMessages: JSON.stringify(unreadMessageIds)
 				};
+	updateRequestEnabled = false;
+	$xhrUpdate = $.ajax({
+		type: 'POST',
+		url: 'history.php',
+		timeout: 30000,
+		data: data,
 
-	$.post('history.php',
-
-		data,
-
-		function(data){
+		success: function(data){
 
 			//var histDiv = document.getElementById('history');
 			var receivedData = JSON.parse(data);
@@ -452,13 +424,22 @@ function update(){
 
 			setMessagesReaded(receivedData.readMsgIds);
 
-			if (history.length > 0){
+			if (history.length > 0) {
 				appendMessagesToHistory(history, fromUserId, 'append');
 				//histDiv.scrollTop = histDiv.scrollHeight;
 			}
+			updateRequestEnabled = true;
+			//update();
+		},
 
+		complete: function(jqXHR, status){
+			if ((status == "timeout")||(status == "error")){
+				updateRequestEnabled = true;
+				//update();
+			}
 		}
-	);
+
+	})
 }
 
 function getCurrentUserId(){
