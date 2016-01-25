@@ -12,7 +12,7 @@ function setIntervalUpdate(){
 $(function(){
 
 	update();
-	updateIntervalId = setIntervalUpdate();
+//	updateIntervalId = setIntervalUpdate();
 
 	$('.user_item').click(function(){
 
@@ -38,8 +38,8 @@ $(function(){
 		if (!(updateIntervalId === undefined)){
 			clearInterval(updateIntervalId);
 		}
-		updateIntervalId = setIntervalUpdate();
-		//update();
+	//	updateIntervalId = setIntervalUpdate();
+		update();
 	})
 	
 	$('#btnSend').click(function(){
@@ -430,6 +430,7 @@ function update(){
 			}
 			updateRequestEnabled = true;
 			//update();
+			setTimeout(function(){update()}, 50);
 		},
 
 		complete: function(jqXHR, status){

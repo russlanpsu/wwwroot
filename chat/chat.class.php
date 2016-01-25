@@ -86,7 +86,10 @@ class Chat
             $history[] = $row;
         }
 
-        $this->setMessageRead($curUser, $companion);
+        if (count($history) > 0){
+            $this->setMessageRead($curUser, $companion);
+        }
+
         return $history;
 
     }
@@ -138,9 +141,8 @@ class Chat
         return $ids;
     }
 
-    function arraysIsEqual($arr1, $arr2){
-        return ((count(array_diff($arr1, $arr2)) === 0)
-            && (count(array_diff($arr2, $arr1)) === 0));
+    function arraysIsEquals($arr1, $arr2){
+
     }
 
     public function update($curUser, $companion, $unreadMsgIds){
@@ -168,7 +170,7 @@ class Chat
             $readMessageIds1 = $this->getReadedMessageIds($unreadMsgIds);
             $onlineUserIds1 = $this->getOnlineUserIds($curUser);*/
 
-            if (!$this->arraysIsEqual($unreadMessages1, $unreadMessages)){
+            if (count($unreadMessages1) > 0){
         //    if ($unreadMessages1 != $unreadMessages){
                 $unreadMessages = $unreadMessages1;
                 break;
