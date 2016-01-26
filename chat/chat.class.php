@@ -161,7 +161,7 @@ class Chat
         $onlineUserIds = $this->getOnlineUserIds($curUser);
 
         $this->setLastActivityDate($curUser);
-        $endTime = time() + $maxExecTime -6;
+        $endTime = time() + $maxExecTime - 6;
     //    for($i=0; $i<100; $i++){
         while (time()<$endTime){
             usleep(250000); //  250ms
