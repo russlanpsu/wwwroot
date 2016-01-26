@@ -67,6 +67,11 @@ switch ($action){
 		$toUser = $_POST['toUser'];
 		$pageIndex = $_POST['historyPageIndex'];
 		$history = $chat->getRenderedHistory($fromUser, $toUser, $pageIndex);
-
+		break;
+	case "setCompanion":
+		$userId = $_POST["userId"];
+		session_start();
+		$_SESSION["companion"] = $userId;
+		break;
 }
 

@@ -16,8 +16,13 @@ $(function(){
 
 	$('.user_item').click(function(){
 
+		var $this = $(this);
+		var companionId = $this.attr('id');
+		setCompanion(companionId);
+		update();
+
 		if (!($xhrUpdate === undefined) && ($xhrUpdate.readyState != 4)){
-			$xhrUpdate.abort();
+			//$xhrUpdate.abort();
 			updateRequestEnabled = true;
 		}
 
@@ -26,7 +31,7 @@ $(function(){
 			$($activeUser[0]).removeClass('active_user');
 		}
 
-		var $this = $(this);
+
 		$this.addClass('active_user');
 		$this.find('.msg_count').html('');
 		//$this.find('.last_msg').html('');
@@ -39,7 +44,7 @@ $(function(){
 			clearInterval(updateIntervalId);
 		}
 	//	updateIntervalId = setIntervalUpdate();
-		update();
+
 	})
 	
 	$('#btnSend').click(function(){
@@ -82,23 +87,18 @@ $(function(){
 
 })
 
-/*function CreateUsersList_old(targetListId, users, excludedUserId){
-	
-	if (excludedUserId === undefined){
-		excludedUserId = -1;
-	}
-	
-	var fromUserList = document.getElementById(targetListId);			
-    for(var i=0; i<users.length; i++){
-        var user = users[i];
-        if (user.id != excludedUserId){
-            var optionItem = document.createElement('option');
-            optionItem.id = user.id;
-            optionItem.innerHTML = user.name;
-            fromUserList.appendChild(optionItem);
-        }
-    }
-}*/
+function setCompanion(userId){
+	$.ajax({
+		type: 'POST',
+		url: 'history.php',
+		data: {	action: 'setCompanion',
+				userId: userId},
+		async: true,
+		success: function(data){
+
+		}
+	})
+}
 
 function renderTemplate(tmplId, target, context, appendKind){
 	var $tmpl = $('#' + tmplId);
@@ -385,8 +385,6 @@ function setUsersOnline(userIds){
 
 function update(){
 
-//	var $fromUser = $("#fromUser option:selected");
-//	var fromUserId = $fromUser.attr('id');
 	var fromUserId = getCurrentUserId();
 
 	var $activeUser = $('.active_user');
@@ -405,42 +403,61 @@ function update(){
 				toUser: (toUserId === undefined) ? -1 : toUserId,
 				unreadMessages: JSON.stringify(unreadMessageIds)
 				};
-	updateRequestEnabled = false;
-	$xhrUpdate = $.ajax({
-		type: 'POST',
-		url: 'history.php',
-		timeout: 30000,
-		data: data,
 
-		success: function(data){
+	var createNewRequest = false;
 
-			//var histDiv = document.getElementById('history');
-			var receivedData = JSON.parse(data);
-			var history;
+	if (($xhrUpdate === undefined)
+		|| ($xhrUpdate.readyState == 4))
+	{
+		createNewRequest = true;
+	}
 
-			history = receivedData.unreadMsgs;
-			updateIncomingMessagesCount(receivedData.unreadMsgsCount);
-			setUsersOnline(receivedData.onlineUsers);
+	if (!createNewRequest){
+		setTimeout(function () {
+			update()
+		}, 50);
+	}
 
-			setMessagesReaded(receivedData.readMsgIds);
+	if (createNewRequest) {
+		$xhrUpdate = $.ajax({
+			type: 'POST',
+			url: 'history.php',
+			timeout: 30000,
+			data: data,
 
-			if (history.length > 0) {
-				appendMessagesToHistory(history, fromUserId, 'append');
-				//histDiv.scrollTop = histDiv.scrollHeight;
-			}
-			updateRequestEnabled = true;
-			//update();
-			setTimeout(function(){update()}, 50);
-		},
+			success: function (data) {
 
-		complete: function(jqXHR, status){
-			if ((status == "timeout")||(status == "error")){
+				//var histDiv = document.getElementById('history');
+				var receivedData = JSON.parse(data);
+				var history;
+
+				history = receivedData.unreadMsgs;
+				updateIncomingMessagesCount(receivedData.unreadMsgsCount);
+				setUsersOnline(receivedData.onlineUsers);
+
+				setMessagesReaded(receivedData.readMsgIds);
+
+				if (history.length > 0) {
+					appendMessagesToHistory(history, fromUserId, 'append');
+					//histDiv.scrollTop = histDiv.scrollHeight;
+				}
 				updateRequestEnabled = true;
 				//update();
-			}
-		}
+				setTimeout(function () {
+					update()
+				}, 50);
+			},
 
-	})
+			complete: function (jqXHR, status) {
+				if ((status == "timeout") || (status == "error")) {
+					setTimeout(function () {
+						update()
+					}, 50);
+				}
+			}
+
+		})
+	}
 }
 
 function getCurrentUserId(){
