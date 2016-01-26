@@ -226,12 +226,12 @@ function sendMessage(){
 
 	$.ajax({
 		type: 'POST',
-		url:'history.php',
+		url:  'history.php',
 		data:{
 				action: 'insertMessage',
 				fromUser: fromUserId,
 				toUser: toUserId,
-				msg:msgText
+				msg: msgText
 		},
 
 		success: function (data) {

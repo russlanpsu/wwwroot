@@ -10,7 +10,7 @@
 define("HISTORY_PAGE_SIZE", 10);
 class Chat
 {
-
+    const UPDATE_DELAY = 250; // ms
     private $mysqli;
 
     public function __construct(){
@@ -24,7 +24,7 @@ class Chat
         $this->mysqli->close();
     }
 
-    public function setMessageRead($curUser, $companion){
+    public function setMessageRead_old($curUser, $companion){
 
         $sql = "UPDATE messages
 				SET is_readed = 1
@@ -32,6 +32,18 @@ class Chat
 				    AND to_user = {$curUser}
 					AND is_readed = 0";
         $this->mysqli->query($sql);
+    }
+
+    public function setMessageRead($ids)
+    {
+        if (count($ids) > 0) {
+
+            $sql = "UPDATE messages
+                    SET is_readed = 1
+                    WHERE id IN (" . implode($ids, ", ") . ")";
+            $this->mysqli->query($sql);
+//            file_put_contents("php.log", $sql."\n", FILE_APPEND);
+        }
     }
 
     public function getHistory($curUser, $companion, $page = 0){
@@ -56,11 +68,18 @@ class Chat
         $result = $this->mysqli->query($sql);
 
         $history = array();
+        $unreadMsgIds = array();
         while ($row = mysqli_fetch_assoc($result)) {
             $history[] = $row;
+
+            if ($row["is_readed"] == 0){
+                $unreadMsgIds[] = $row["msg_id"];
+            }
+
         }
 
-        $this->setMessageRead($curUser, $companion);
+//        $this->setMessageRead($curUser, $companion);
+        $this->setMessageRead($unreadMsgIds);
 
         return $history;
     }
@@ -71,7 +90,9 @@ class Chat
             return $history;
         };
 
-        $sql = "SELECT msg_text,
+        $sql = "SELECT
+                    id,
+                    msg_text,
 					from_user,
 					to_user,
 					create_date
@@ -82,12 +103,19 @@ class Chat
 
         $result = $this->mysqli->query($sql);
 
+        $ids = array();
         while ($row = mysqli_fetch_assoc($result)) {
             $history[] = $row;
+            $ids[] = $row["id"];
         }
 
+    /*    if (count($history) > 0) {
+//            file_put_contents('php.log', json_encode($history) . "\n", FILE_APPEND);
+        }*/
+
         if (count($history) > 0){
-            $this->setMessageRead($curUser, $companion);
+//            $this->setMessageRead($curUser, $companion);
+            $this->setMessageRead($ids);
         }
 
         return $history;
@@ -142,40 +170,75 @@ class Chat
     }
 
     function arraysIsEquals($arr1, $arr2){
-
+        return $arr1 === $arr2;
     }
 
     public function update($curUser, $companion, $unreadMsgIds){
 
     //    sleep(10);
+        //ignore_user_abort(false);
         $maxExecTime = (int) ini_get('max_execution_time');
         if (($maxExecTime === 0)
             || ($maxExecTime > 30)) {
             $maxExecTime = 30;
         }
 
+        /*$tmpCompanion = $companion;
 
-        $unreadMessages = $this->getUnreadMessages($curUser, $companion);
+        $_SESSION["companion"]=$tmpCompanion;
+        if (isset($_SESSION["companion"])) {
+            if ($companion === $_SESSION["companion"]) {
+            } else {
+                unset($_SESSION["companion"]);
+            }
+        }*/
+
+
+
+    //    $unreadMessages = $this->getUnreadMessages($curUser, $companion);
         $unreadMessagesCount = $this->getIncomingMessagesCount($curUser);
         $readMessageIds = $this->getReadedMessageIds($unreadMsgIds);
         $onlineUserIds = $this->getOnlineUserIds($curUser);
 
         $this->setLastActivityDate($curUser);
-        $endTime = time() + $maxExecTime - 6;
+        $endTime = time() + $maxExecTime - 5;
     //    for($i=0; $i<100; $i++){
-        while (time()<$endTime){
-            usleep(250000); //  250ms
-            $unreadMessages1 = $this->getUnreadMessages($curUser, $companion);
-            /*$unreadMessagesCount1 = $this->getIncomingMessagesCount($curUser);
-            $readMessageIds1 = $this->getReadedMessageIds($unreadMsgIds);
-            $onlineUserIds1 = $this->getOnlineUserIds($curUser);*/
+        $t = 0;
 
-            if (count($unreadMessages1) > 0){
-        //    if ($unreadMessages1 != $unreadMessages){
-                $unreadMessages = $unreadMessages1;
+        while (time() < $endTime){
+
+            /*if ($companion != $_SESSION["companion"]){
+                break;
+            }*/
+
+            usleep(self::UPDATE_DELAY*1000); //  250ms
+
+           /* $t += self::UPDATE_DELAY;
+            if (($t / 1000) > 1){
+
+                if (connection_aborted())exit;
+
+                $t = 0;
+            }*/
+
+            $unreadMessages = $this->getUnreadMessages($curUser, $companion);
+            $unreadMessagesCount1 = $this->getIncomingMessagesCount($curUser);
+            $readMessageIds1 = $this->getReadedMessageIds($unreadMsgIds);
+            $onlineUserIds1 = $this->getOnlineUserIds($curUser);
+
+            if ((count($unreadMessages) > 0)
+                || (!$this->arraysIsEquals($unreadMessagesCount, $unreadMessagesCount1))
+                || (!$this->arraysIsEquals($readMessageIds, $readMessageIds1))
+                || (!$this->arraysIsEquals($onlineUserIds, $onlineUserIds1))
+            )
+             {
+                $readMessageIds = $readMessageIds1;
+                $unreadMessagesCount = $unreadMessagesCount1;
+                $onlineUserIds = $onlineUserIds1;
                 break;
             }
-            $unreadMessages = $unreadMessages1;
+
+
         }
         $result = array(
                         "unreadMsgs" => $unreadMessages,

@@ -8,6 +8,7 @@ ini_set('display_startup_errors', 1);*/
 
 // Страница регситрации нового пользователя
 
+$msg="";
 if(isset($_POST['submit'])) 
 {
     if (!isset($_POST['g-recaptcha-response'])) {
