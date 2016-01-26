@@ -6,7 +6,7 @@ var $xhrUpdate;
 function setIntervalUpdate(){
 	return setInterval(function(){
 		if (updateRequestEnabled) update();
-	}, 50);
+	}, 200);
 }
 
 $(function(){
