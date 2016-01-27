@@ -9,19 +9,9 @@ if (!(isset($action))){
 	exit;
 }
 
-
-//	$mysqli = $mysqli = new mysqli("mysql.main-hosting.com", "u277145571_admin", "pass_word", "u277145571_db");
-//	$mysqli = new mysqli($hostName, "root", "pass_word", "dev_schema");
-
 $chat = new Chat();
 
 switch ($action){
-
-	/*case "getUsers":
-
-		$users = $chat->getUsers();
-		echo json_encode($users);
-		break;*/
 
 	case "getHistory":
 
@@ -39,7 +29,7 @@ switch ($action){
 
 		$fromUser = $_POST['fromUser'];
 		$toUser = $_POST['toUser'];
-		/** @var TYPE_NAME $unreadMsgIds */
+
 		$unreadMsgIds = json_decode($_POST['unreadMessages']);
 		$history = $chat->update($fromUser, $toUser, $unreadMsgIds);
 		echo json_encode($history);
@@ -62,16 +52,23 @@ switch ($action){
 			echo json_encode($msgCount);
 		};
 		break;
-	case "getRenderedHistory":
+	/*case "getRenderedHistory":
 		$fromUser = $_POST['fromUser'];
 		$toUser = $_POST['toUser'];
 		$pageIndex = $_POST['historyPageIndex'];
 		$history = $chat->getRenderedHistory($fromUser, $toUser, $pageIndex);
-		break;
+		break;*/
 	case "setCompanion":
-		$userId = $_POST["userId"];
-		session_start();
-		$_SESSION["companion"] = $userId;
+
+		$fromUser = $_POST["fromUser"];
+		$toUser = $_POST["toUser"];
+
+
+		include_once "UserEvents.class.php";
+		$userEvents = new UserEvents();
+		$jsonEvent = json_encode(array("companion"=>$toUser));
+		$userEvents->writeEvent($fromUser, $jsonEvent);
+
 		break;
 }
 

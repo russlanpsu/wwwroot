@@ -175,6 +175,10 @@ class Chat
 
     public function update($curUser, $companion, $unreadMsgIds){
 
+        include_once "UserEvents.class.php";
+
+        $userEvents = new UserEvents();
+
     //    sleep(10);
         //ignore_user_abort(false);
         $maxExecTime = (int) ini_get('max_execution_time');
@@ -182,17 +186,6 @@ class Chat
             || ($maxExecTime > 30)) {
             $maxExecTime = 30;
         }
-
-        /*$tmpCompanion = $companion;
-
-        $_SESSION["companion"]=$tmpCompanion;
-        if (isset($_SESSION["companion"])) {
-            if ($companion === $_SESSION["companion"]) {
-            } else {
-                unset($_SESSION["companion"]);
-            }
-        }*/
-
 
 
     //    $unreadMessages = $this->getUnreadMessages($curUser, $companion);
@@ -202,39 +195,31 @@ class Chat
 
         $this->setLastActivityDate($curUser);
         $endTime = time() + $maxExecTime - 5;
-    //    for($i=0; $i<100; $i++){
-        $t = 0;
+
 
         while (time() < $endTime){
-
-            /*if ($companion != $_SESSION["companion"]){
-                break;
-            }*/
-
             usleep(self::UPDATE_DELAY*1000); //  250ms
 
-           /* $t += self::UPDATE_DELAY;
-            if (($t / 1000) > 1){
-
-                if (connection_aborted())exit;
-
-                $t = 0;
-            }*/
+            $events = $userEvents->readEvent($curUser);
+//            file_put_contents("php.log", $jsonEvents, )
+//            $events = json_decode($jsonEvents);
+            $companion = $events->{"companion"};
 
             $unreadMessages = $this->getUnreadMessages($curUser, $companion);
             $unreadMessagesCount1 = $this->getIncomingMessagesCount($curUser);
-            $readMessageIds1 = $this->getReadedMessageIds($unreadMsgIds);
-            $onlineUserIds1 = $this->getOnlineUserIds($curUser);
+          /*  $readMessageIds1 = $this->getReadedMessageIds($unreadMsgIds);
+            $onlineUserIds1 = $this->getOnlineUserIds($curUser);*/
 
             if ((count($unreadMessages) > 0)
                 || (!$this->arraysIsEquals($unreadMessagesCount, $unreadMessagesCount1))
-                || (!$this->arraysIsEquals($readMessageIds, $readMessageIds1))
-                || (!$this->arraysIsEquals($onlineUserIds, $onlineUserIds1))
+                /*|| (!$this->arraysIsEquals($readMessageIds, $readMessageIds1))
+                || (!$this->arraysIsEquals($onlineUserIds, $onlineUserIds1))*/
             )
-             {
-                $readMessageIds = $readMessageIds1;
+            {
+
                 $unreadMessagesCount = $unreadMessagesCount1;
-                $onlineUserIds = $onlineUserIds1;
+//                $readMessageIds = $readMessageIds1;
+//                $onlineUserIds = $onlineUserIds1;
                 break;
             }
 
@@ -251,9 +236,7 @@ class Chat
 
     public function getUsers($excludeUserId = -1){
 
-       /* $sql = "SELECT id, name FROM users
-				WHERE id <> " . $excludeUserId .
-				" ORDER BY ID";*/
+
 
         $sql = "SELECT
                     A.id,

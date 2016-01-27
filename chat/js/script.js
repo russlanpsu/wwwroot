@@ -16,9 +16,11 @@ $(function(){
 
 	$('.user_item').click(function(){
 
+		var curUserId = getCurrentUserId();
+
 		var $this = $(this);
 		var companionId = $this.attr('id');
-		setCompanion(companionId);
+		setCompanion(curUserId, companionId);
 		update();
 
 		if (!($xhrUpdate === undefined) && ($xhrUpdate.readyState != 4)){
@@ -87,12 +89,14 @@ $(function(){
 
 })
 
-function setCompanion(userId){
+function setCompanion(fromUser, toUser){
 	$.ajax({
 		type: 'POST',
 		url: 'history.php',
 		data: {	action: 'setCompanion',
-				userId: userId},
+				fromUser: fromUser,
+				toUser: toUser
+				},
 		async: true,
 		success: function(data){
 
