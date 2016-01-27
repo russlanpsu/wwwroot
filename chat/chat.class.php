@@ -173,58 +173,61 @@ class Chat
         return $arr1 === $arr2;
     }
 
-    public function update($curUser, $companion, $unreadMsgIds){
+    public function update($curUser, $wait, $unreadMsgIds){
 
         include_once "UserEvents.class.php";
+		$userEvents = new UserEvents();
 
-        $userEvents = new UserEvents();
+		$unreadMessagesCount = $this->getIncomingMessagesCount($curUser);
+		$readMessageIds = $this->getReadedMessageIds($unreadMsgIds);
+		$onlineUserIds = $this->getOnlineUserIds($curUser);
 
-    //    sleep(10);
-        //ignore_user_abort(false);
-        $maxExecTime = (int) ini_get('max_execution_time');
-        if (($maxExecTime === 0)
-            || ($maxExecTime > 30)) {
-            $maxExecTime = 30;
-        }
+		$this->setLastActivityDate($curUser);
 
-
-    //    $unreadMessages = $this->getUnreadMessages($curUser, $companion);
-        $unreadMessagesCount = $this->getIncomingMessagesCount($curUser);
-        $readMessageIds = $this->getReadedMessageIds($unreadMsgIds);
-        $onlineUserIds = $this->getOnlineUserIds($curUser);
-
-        $this->setLastActivityDate($curUser);
-        $endTime = time() + $maxExecTime - 5;
+		if ($wait > 0){
+			$maxExecTime = (int) ini_get('max_execution_time');
+			if (($maxExecTime === 0)
+				|| ($maxExecTime > 30)) {
+				$maxExecTime = 30;
+			}
+			if ($wait < $maxExecTime) {
+				$maxExecTime = $wait;
+			}
 
 
-        while (time() < $endTime){
-            usleep(self::UPDATE_DELAY*1000); //  250ms
+			$endTime = time() + $maxExecTime;
 
-            $events = $userEvents->readEvent($curUser);
-//            file_put_contents("php.log", $jsonEvents, )
-//            $events = json_decode($jsonEvents);
-            $companion = $events->{"companion"};
 
-            $unreadMessages = $this->getUnreadMessages($curUser, $companion);
-            $unreadMessagesCount1 = $this->getIncomingMessagesCount($curUser);
-          /*  $readMessageIds1 = $this->getReadedMessageIds($unreadMsgIds);
-            $onlineUserIds1 = $this->getOnlineUserIds($curUser);*/
+			while (time() < $endTime){
+				usleep(self::UPDATE_DELAY*1000); //  250ms
 
-            if ((count($unreadMessages) > 0)
-                || (!$this->arraysIsEquals($unreadMessagesCount, $unreadMessagesCount1))
-                /*|| (!$this->arraysIsEquals($readMessageIds, $readMessageIds1))
-                || (!$this->arraysIsEquals($onlineUserIds, $onlineUserIds1))*/
-            )
-            {
+				$events = $userEvents->readEvent($curUser);
+				$companion = $events->{"companion"};
 
-                $unreadMessagesCount = $unreadMessagesCount1;
+				$unreadMessages = $this->getUnreadMessages($curUser, $companion);
+				$unreadMessagesCount1 = $this->getIncomingMessagesCount($curUser);
+				/*  $readMessageIds1 = $this->getReadedMessageIds($unreadMsgIds);
+				  $onlineUserIds1 = $this->getOnlineUserIds($curUser);*/
+
+				if ((count($unreadMessages) > 0)
+					|| (!$this->arraysIsEquals($unreadMessagesCount, $unreadMessagesCount1))
+					/*|| (!$this->arraysIsEquals($readMessageIds, $readMessageIds1))
+					|| (!$this->arraysIsEquals($onlineUserIds, $onlineUserIds1))*/
+				)
+				{
+
+					$unreadMessagesCount = $unreadMessagesCount1;
 //                $readMessageIds = $readMessageIds1;
 //                $onlineUserIds = $onlineUserIds1;
-                break;
-            }
+					break;
+				}
 
 
-        }
+			}
+		}else{
+			$unreadMessages = array();
+		}
+
         $result = array(
                         "unreadMsgs" => $unreadMessages,
                         "unreadMsgsCount" => $unreadMessagesCount,
@@ -235,8 +238,6 @@ class Chat
     }
 
     public function getUsers($excludeUserId = -1){
-
-
 
         $sql = "SELECT
                     A.id,

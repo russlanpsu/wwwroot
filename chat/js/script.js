@@ -1,18 +1,18 @@
 var updateIntervalId;
 var msgIndex = 0;
-var updateRequestEnabled = false;
 var $xhrUpdate;
+/*var updateRequestEnabled = false;
+
 
 function setIntervalUpdate(){
 	return setInterval(function(){
 		if (updateRequestEnabled) update();
 	}, 200);
-}
+}*/
 
 $(function(){
 
-	update();
-//	updateIntervalId = setIntervalUpdate();
+	update(0);
 
 	$('.user_item').click(function(){
 
@@ -21,12 +21,7 @@ $(function(){
 		var $this = $(this);
 		var companionId = $this.attr('id');
 		setCompanion(curUserId, companionId);
-		update();
-
-		if (!($xhrUpdate === undefined) && ($xhrUpdate.readyState != 4)){
-			//$xhrUpdate.abort();
-			updateRequestEnabled = true;
-		}
+		update(0);
 
 		var $activeUser = $('.active_user');
 		if ($activeUser.length > 0){
@@ -71,7 +66,6 @@ $(function(){
 		console.log($this.scrollTop());
 
 		if ($this.scrollTop() == 0){
-			//$($this.children()[0]).before('<div>test</div>');
 
 			var pageIndex = +$this.attr('page-index');
 			if (pageIndex != -1) {
@@ -88,6 +82,27 @@ $(function(){
 	})
 
 })
+
+function historyOnScroll(){
+
+    var $this = $(this);
+    console.log($this.scrollTop());
+
+    if ($this.scrollTop() == 0){
+
+        var pageIndex = +$this.attr('page-index');
+        if (pageIndex != -1) {
+            pageIndex += 1;
+            var isLastPage = getHistory(pageIndex);
+            if (isLastPage) {
+                pageIndex = -1;
+            }
+            $this.attr('page-index', pageIndex);
+        }
+
+    }
+
+}
 
 function setCompanion(fromUser, toUser){
 	$.ajax({
@@ -110,10 +125,6 @@ function renderTemplate(tmplId, target, context, appendKind){
 	var template = Handlebars.compile($tmpl.html());
 	var rendered = template(context);
 
-//	var ptrn =/(ftp|http|https):\/\/((\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?)/gi;
-//	rendered = rendered.replace(ptrn, '<a href="$1$2" target="_blank">$2</a>');
-
-
 	var $target = $('#' + target);
 
 	switch (appendKind){
@@ -124,7 +135,6 @@ function renderTemplate(tmplId, target, context, appendKind){
 			var $firstChild = $(firstChild);
 			$firstChild.before(rendered);
 
-			//$target.scrollTop($firstChild.offset().top - 10);
 			$target.scrollTop($firstChild.offset().top - 10);
 
 			break;
@@ -266,10 +276,14 @@ function appendMessagesToHistory(messages, fromUserId, appendKind){
 			msg.isReaded = (msg.is_readed == 1);
 		}
 	});
-	var context = {messages: messages};
-	renderTemplate('tmpl_msg_history', 'history', context, appendKind);
 
-
+    if (messages.length > 0){
+        var context = {messages: messages};
+        renderTemplate('tmpl_msg_history', 'history', context, appendKind);
+    }
+    else{
+        $('#history').html('');
+    }
 }
 
 function updateIncomingMessagesCount(messagesCount){
@@ -387,7 +401,7 @@ function setUsersOnline(userIds){
 	});
 }
 
-function update(){
+function update(wait){
 
 	var fromUserId = getCurrentUserId();
 
@@ -404,7 +418,8 @@ function update(){
 	var unreadMessageIds = getUnreadMessageIds();
 	var data = {action: 'update',
 				fromUser: fromUserId,
-				toUser: (toUserId === undefined) ? -1 : toUserId,
+				//toUser: (toUserId === undefined) ? -1 : toUserId,
+                wait: wait,
 				unreadMessages: JSON.stringify(unreadMessageIds)
 				};
 
@@ -418,7 +433,7 @@ function update(){
 
 	if (!createNewRequest){
 		setTimeout(function () {
-			update()
+			update(25)
 		}, 50);
 	}
 
@@ -445,18 +460,18 @@ function update(){
 					appendMessagesToHistory(history, fromUserId, 'append');
 					//histDiv.scrollTop = histDiv.scrollHeight;
 				}
-				updateRequestEnabled = true;
 				//update();
-				setTimeout(function () {
+				/*setTimeout(function () {
 					update()
-				}, 50);
+				}, 50);*/
 			},
 
 			complete: function (jqXHR, status) {
+                setTimeout(function () {
+                    update(25)
+                }, 50);
 				if ((status == "timeout") || (status == "error")) {
-					setTimeout(function () {
-						update()
-					}, 50);
+
 				}
 			}
 

@@ -28,10 +28,11 @@ switch ($action){
 	case "update":
 
 		$fromUser = $_POST['fromUser'];
-		$toUser = $_POST['toUser'];
-
+//		$toUser = $_POST['toUser'];
+		$wait = $_POST["wait"];
 		$unreadMsgIds = json_decode($_POST['unreadMessages']);
-		$history = $chat->update($fromUser, $toUser, $unreadMsgIds);
+//		$history = $chat->update($fromUser, $toUser, $unreadMsgIds);
+		$history = $chat->update($fromUser, $wait, $unreadMsgIds);
 		echo json_encode($history);
 		break;
 
