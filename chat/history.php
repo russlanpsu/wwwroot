@@ -67,8 +67,9 @@ switch ($action){
 
 		include_once "UserEvents.class.php";
 		$userEvents = new UserEvents();
-		$jsonEvent = json_encode(array("companion"=>$toUser));
-		$userEvents->writeEvent($fromUser, $jsonEvent);
+//		$jsonEvent = json_encode(array("companion"=>$toUser));
+		$event = array("companion"=>$toUser);
+		$userEvents->writeEvent($fromUser, $event);
 
 		break;
 }

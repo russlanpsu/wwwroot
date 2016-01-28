@@ -19,7 +19,8 @@ class UserEvents
         $this->mysqli->close();
     }
 
-    public function insertEvent($userId, $jsonEvents){
+    public function insertEvent($userId, $events){
+		$jsonEvents = json_encode($events);
         $sql = "INSERT INTO user_events
                   (user_id, events)
                 VALUES
@@ -33,8 +34,10 @@ class UserEvents
         $this->mysqli->query($sql);
     }
 
-    public function writeEvent($userId, $jsonEvents){
+    public function writeEvent($userId, $events){
         $this->deleteEvent($userId);
+
+		$jsonEvents = json_encode($events);
         $this->insertEvent($userId, $jsonEvents);
     }
 
