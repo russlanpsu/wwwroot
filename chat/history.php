@@ -27,7 +27,7 @@ switch ($action){
 
 	case "update":
 
-		$fromUser = $_POST['fromUser'];
+		$fromUser = $_POST["fromUser"];
 //		$toUser = $_POST['toUser'];
 		$wait = $_POST["wait"];
 		$unreadMsgIds = json_decode($_POST['unreadMessages']);
@@ -38,9 +38,9 @@ switch ($action){
 
 	case "insertMessage":
 
-		$fromUser = $_POST['fromUser'];
-		$toUser = $_POST['toUser'];
-		$msg = $_POST['msg'];
+		$fromUser = $_POST["fromUser"];
+		$toUser = $_POST["toUser"];
+		$msg = $_POST["msg"];
 		list($msgId, $createDate) = $chat->insertMessage($fromUser, $toUser, $msg);
 		echo json_encode(array("msg_id"=>$msgId, "create_date"=>$createDate));
 

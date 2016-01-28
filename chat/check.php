@@ -25,6 +25,10 @@ if (isset($_COOKIE['id']) and isset($_COOKIE['hash']))
 	//	require_once '../PHP/vendor/twig/twig/lib/Twig/Autoloader.php';
 	//	require_once '..\PHP\Twig-1.23.3\lib\Twig\Autoloader.php';
 		include_once $TWIG_AUTOLOADER_PATH;
+		include_once "UserEvents.class.php";
+
+		$userEvents = new UserEvents();
+		$userEvents->deleteEvent($userdata['id']);
 
 		Twig_Autoloader::register();
 
@@ -48,7 +52,5 @@ if (isset($_COOKIE['id']) and isset($_COOKIE['hash']))
 	}
 }
 else{
-//	include($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'chat/auth/login.php');
 	header('Location: /chat/auth/login.php');
-//	echo  $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . 'chat/auth/login.php';
 }

@@ -169,8 +169,21 @@ class Chat
         return $ids;
     }
 
-    function arraysIsEquals($arr1, $arr2){
+   /* function arraysIsEquals($arr1, $arr2){
         return $arr1 === $arr2;
+    }*/
+
+    function arraysIsEquals($arr1, $arr2){
+        $count =count($arr1);
+        return ($count === count($arr2))
+        && ($count === count(array_intersect($arr1, $arr2)));
+
+    }
+
+    function assocArraysIsEquals($arr1, $arr2){
+        $count =count($arr1);
+        return ($count === count($arr2))
+            && ($count === count(array_intersect_assoc($arr1, $arr2)));
     }
 
     public function update($curUser, $wait, $unreadMsgIds){
@@ -178,6 +191,7 @@ class Chat
         include_once "UserEvents.class.php";
 		$userEvents = new UserEvents();
 
+        $unreadMessages = array();
 		$unreadMessagesCount = $this->getIncomingMessagesCount($curUser);
 		$readMessageIds = $this->getReadedMessageIds($unreadMsgIds);
 		$onlineUserIds = $this->getOnlineUserIds($curUser);
@@ -190,6 +204,7 @@ class Chat
 				|| ($maxExecTime > 30)) {
 				$maxExecTime = 30;
 			}
+
 			if ($wait < $maxExecTime) {
 				$maxExecTime = $wait;
 			}
@@ -198,34 +213,35 @@ class Chat
 			$endTime = time() + $maxExecTime;
 
 
-			while (time() < $endTime){
-				usleep(self::UPDATE_DELAY*1000); //  250ms
+			while (time() < $endTime) {
+                usleep(self::UPDATE_DELAY * 1000); //  250ms
 
-				$events = $userEvents->readEvent($curUser);
-				$companion = $events->{"companion"};
+                $events = $userEvents->readEvent($curUser);
+                if (!is_null($events)){
+                    $companion = $events->{"companion"};
+                    $unreadMessages = $this->getUnreadMessages($curUser, $companion);
+                }
 
-				$unreadMessages = $this->getUnreadMessages($curUser, $companion);
 				$unreadMessagesCount1 = $this->getIncomingMessagesCount($curUser);
-				/*  $readMessageIds1 = $this->getReadedMessageIds($unreadMsgIds);
-				  $onlineUserIds1 = $this->getOnlineUserIds($curUser);*/
+                /*$readMessageIds1 = $this->getReadedMessageIds($unreadMsgIds);
+                $onlineUserIds1 = $this->getOnlineUserIds($curUser);*/
 
-				if ((count($unreadMessages) > 0)
-					|| (!$this->arraysIsEquals($unreadMessagesCount, $unreadMessagesCount1))
+				if ((isset($unreadMessages) && (count($unreadMessages) > 0))
+//					|| (!$this->assocArraysIsEquals($unreadMessagesCount, $unreadMessagesCount1))
+                    || ($unreadMessagesCount !== $unreadMessagesCount1)
 					/*|| (!$this->arraysIsEquals($readMessageIds, $readMessageIds1))
 					|| (!$this->arraysIsEquals($onlineUserIds, $onlineUserIds1))*/
 				)
 				{
 
 					$unreadMessagesCount = $unreadMessagesCount1;
-//                $readMessageIds = $readMessageIds1;
-//                $onlineUserIds = $onlineUserIds1;
+                    /*$readMessageIds = $readMessageIds1;
+                    $onlineUserIds = $onlineUserIds1;*/
 					break;
 				}
 
 
 			}
-		}else{
-			$unreadMessages = array();
 		}
 
         $result = array(

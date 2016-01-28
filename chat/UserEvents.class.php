@@ -40,17 +40,19 @@ class UserEvents
 
 
     public function readEvent($userId){
+
+        $result = null;
+
         $sql = "SELECT events FROM user_events
                 WHERE user_id=$userId";
         $query = $this->mysqli->query($sql);
 
-       /* if ($query === false){
-            file_put_contents("php.log", $sql, FILE_APPEND);
-        }*/
+        if ($query->num_rows > 0){
+            $data = mysqli_fetch_assoc($query);
+            $result = json_decode($data["events"]);
+        }
 
-        $data = mysqli_fetch_assoc($query);
-
-        return json_decode($data["events"]);
+        return $result;
 
     }
 

@@ -411,18 +411,6 @@ function update(wait){
 		var toUserId = $toUser.attr('id');
 	}
 
-/*	if (toUserId == -1){
-		return;
-	};*/
-
-	var unreadMessageIds = getUnreadMessageIds();
-	var data = {action: 'update',
-				fromUser: fromUserId,
-				//toUser: (toUserId === undefined) ? -1 : toUserId,
-                wait: wait,
-				unreadMessages: JSON.stringify(unreadMessageIds)
-				};
-
 	var createNewRequest = false;
 
 	if (($xhrUpdate === undefined)
@@ -436,6 +424,14 @@ function update(wait){
 			update(25)
 		}, 50);
 	}
+
+	var unreadMessageIds = getUnreadMessageIds();
+	var data = {action: 'update',
+		fromUser: fromUserId,
+		//toUser: (toUserId === undefined) ? -1 : toUserId,
+		wait: wait,
+		unreadMessages: JSON.stringify(unreadMessageIds)
+	};
 
 	if (createNewRequest) {
 		$xhrUpdate = $.ajax({
@@ -458,12 +454,8 @@ function update(wait){
 
 				if (history.length > 0) {
 					appendMessagesToHistory(history, fromUserId, 'append');
-					//histDiv.scrollTop = histDiv.scrollHeight;
 				}
-				//update();
-				/*setTimeout(function () {
-					update()
-				}, 50);*/
+
 			},
 
 			complete: function (jqXHR, status) {
@@ -474,7 +466,6 @@ function update(wait){
 
 				}
 			}
-
 		})
 	}
 }
