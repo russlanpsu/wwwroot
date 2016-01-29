@@ -46,7 +46,7 @@ class Chat
             $this->mysqli->query($sql);
 
 			/*$events = $this->_userEvents->readEvent($curUser);
-			$events["unreadMsgs"] = $ids;
+			$events["readedMsgs"] = $ids;
 
 			$this->_userEvents->writeEvent($curUser, $events);*/
 
@@ -217,6 +217,9 @@ class Chat
                 if (!is_null($events)){
                     $companion = $events->{"companion"};
                     $unreadMessages = $this->getUnreadMessages($curUser, $companion);
+                    if (isset($companion->{"readedMsgs"})){
+
+                    }
                 }
 
 				$unreadMessagesCount1 = $this->getIncomingMessagesCount($curUser);

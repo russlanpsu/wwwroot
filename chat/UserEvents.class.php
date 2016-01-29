@@ -36,9 +36,7 @@ class UserEvents
 
     public function writeEvent($userId, $events){
         $this->deleteEvent($userId);
-
-		$jsonEvents = json_encode($events);
-        $this->insertEvent($userId, $jsonEvents);
+        $this->insertEvent($userId, $events);
     }
 
 

@@ -62,7 +62,7 @@ switch ($action){
 	case "setCompanion":
 
 		$fromUser = $_POST["fromUser"];
-		$toUser = $_POST["toUser"];
+		$toUser = (int)$_POST["toUser"];
 
 
 		include_once "UserEvents.class.php";
