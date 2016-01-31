@@ -58,6 +58,7 @@ $(function(){
 	$('#msgField').bind('input propertychange', function() {
 		$('#btnSend').attr('disabled', $(this).val().length == 0);
 		$('#status').html("");
+		//sendTyping();
 	})
 
 	$('#history').scroll(function(){
@@ -82,6 +83,21 @@ $(function(){
 	})
 
 })
+
+function sendTyping(){
+	var toUserId = $($('.active_user')).attr('id');
+	var data = {action: 'sendTyping',
+			fromUser: getCurrentUserId(),
+			toUser: toUserId};
+	$.ajax({
+		type: "POST",
+		url: "history.php",
+		data: data,
+		success: function(data){
+
+		}
+	});
+}
 
 function historyOnScroll(){
 
@@ -426,11 +442,13 @@ function update(wait){
 	}
 
 	var unreadMessageIds = getUnreadMessageIds();
+	var lastMsgId = $('.msg-text.in_msg').last().attr('msg-id');
 	var data = {action: 'update',
 		fromUser: fromUserId,
 		//toUser: (toUserId === undefined) ? -1 : toUserId,
 		wait: wait,
-		unreadMessages: JSON.stringify(unreadMessageIds)
+		unreadMessages: JSON.stringify(unreadMessageIds),
+		lastMsgId: lastMsgId
 	};
 
 	if (createNewRequest) {

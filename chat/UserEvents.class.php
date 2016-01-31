@@ -19,6 +19,12 @@ class UserEvents
         $this->mysqli->close();
     }
 
+    function createEmptyEvent(){
+        $result = array("companion"=>-1,
+                        "typing"=>array());
+        return $result;
+    }
+
     public function insertEvent($userId, $events){
 		$jsonEvents = json_encode($events);
         $sql = "INSERT INTO user_events
@@ -36,7 +42,21 @@ class UserEvents
 
     public function writeEvent($userId, $events){
         $this->deleteEvent($userId);
+
+        /*$emptyEvents = $this->createEmptyEvent();
+
+        if (isset($events["companion"])){
+
+        }
+
+        $emptyEvents["companion"] = $events["companion"];
+        if (isset($events["typing"])){
+            $emptyEvents["typing"] = $events["typing"];
+        };
+
+        $this->insertEvent($userId, $emptyEvents);*/
         $this->insertEvent($userId, $events);
+
     }
 
 

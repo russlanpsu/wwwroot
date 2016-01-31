@@ -32,7 +32,8 @@ switch ($action){
 		$wait = $_POST["wait"];
 		$unreadMsgIds = json_decode($_POST['unreadMessages']);
 //		$history = $chat->update($fromUser, $toUser, $unreadMsgIds);
-		$history = $chat->update($fromUser, $wait, $unreadMsgIds);
+		$lastMsgId = (isset($_POST["lastMsgId"])) ? $_POST["lastMsgId"] : -1;
+		$history = $chat->update($fromUser, $wait, $unreadMsgIds, $lastMsgId);
 		echo json_encode($history);
 		break;
 
@@ -70,6 +71,17 @@ switch ($action){
 //		$jsonEvent = json_encode(array("companion"=>$toUser));
 		$event = array("companion"=>$toUser);
 		$userEvents->writeEvent($fromUser, $event);
+
+		break;
+	case "sendTyping":
+		$fromUser = $_POST["fromUser"];
+		$toUser = $_POST["toUser"];
+
+		include_once "UserEvents.class.php";
+		$userEvents = new UserEvents();
+		$events = $userEvents->readEvent($toUser);
+		$events["typing"][] = $fromUser;
+		$userEvents->writeEvent($toUser, $events);
 
 		break;
 }

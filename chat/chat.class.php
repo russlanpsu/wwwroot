@@ -10,7 +10,7 @@
 define("HISTORY_PAGE_SIZE", 10);
 class Chat
 {
-    const UPDATE_DELAY = 4*250; // ms
+    const UPDATE_DELAY = 1*250; // ms
     private $mysqli;
 	private $_userEvents;
     public function __construct(){
@@ -91,14 +91,14 @@ class Chat
         return $history;
     }
 
-    public function getUnreadMessages($curUser, $companion){
+    public function getUnreadMessages($curUser, $companion, $lastMsgId){
         $history = array();
-        if ($companion == -1){
+        if (($companion === -1)||($lastMsgId === -1)){
             return $history;
         };
 
         $sql = "SELECT
-                    id,
+                    id AS msg_id,
                     msg_text,
 					from_user,
 					to_user,
@@ -106,14 +106,15 @@ class Chat
 				FROM messages
 				WHERE from_user = {$companion}
 				    AND to_user = {$curUser}
-					AND is_readed = 0";
+				    AND id > $lastMsgId";
+//					AND is_readed = 0";
 
         $result = $this->mysqli->query($sql);
 
         $ids = array();
         while ($row = mysqli_fetch_assoc($result)) {
             $history[] = $row;
-            $ids[] = $row["id"];
+            $ids[] = $row["msg_id"];
         }
 
         if (count($history) > 0){
@@ -188,7 +189,7 @@ class Chat
             && ($count === count(array_intersect_assoc($arr1, $arr2)));
     }
 
-    public function update($curUser, $wait, $unreadMsgIds){
+    public function update($curUser, $wait, $unreadMsgIds, $lastMsgId){
 
         $unreadMessages = array();
 		$unreadMessagesCount = $this->getIncomingMessagesCount($curUser);
@@ -216,7 +217,7 @@ class Chat
                 $events = $this->_userEvents->readEvent($curUser);
                 if (!is_null($events)){
                     $companion = $events->{"companion"};
-                    $unreadMessages = $this->getUnreadMessages($curUser, $companion);
+                    $unreadMessages = $this->getUnreadMessages($curUser, $companion, $lastMsgId);
                     if (isset($companion->{"readedMsgs"})){
 
                     }
