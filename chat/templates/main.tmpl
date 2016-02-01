@@ -47,6 +47,13 @@
 	});
 </script>
 
+<div id="userInfoDialog">
+	<form method="post" id="avatar_form" name="fileinfo">
+		<input type="file" name="file" id="file" required style="visibility:hidden;" onchange="return submitForm();"/>
+		<!--   <input type="submit" value="Upload" /> -->
+	</form>
+	<img src="/chat/img/user.png" id="user_avatar" style="width: 64px;" onclick="simulateClick('file');return false;">
+</div>
 <div style="width: 800px;">
 
     <div id="cont_user_list">
@@ -54,37 +61,37 @@
 	</div>
 
 <div style="float: right;">
-<div style="width: 500px;">
+	<div style="width: 500px;">
 
-    <div style="width: 100%; display: table; margin:5px; background: #6383a8; height: 30px;">
+		<div style="width: 100%; display: table; margin:5px; background: #6383a8; height: 30px;">
 
-       <!-- <select id="toUser" style="display: table-cell; margin-top: 7px; margin-left: 5px;">
-            <option id="-1">&#45;&#45;</option>
-        </select>-->
+		   <!-- <select id="toUser" style="display: table-cell; margin-top: 7px; margin-left: 5px;">
+				<option id="-1">&#45;&#45;</option>
+			</select>-->
 
-        <div class="user_name" style="display: table-cell; text-align: right; line-height: 30px;">
-            <span >Я:</span>
-            <span id="userName">
-				{{ userName }}
-			</span>
-        </div>
-    </div>	
-  
-    <div id="history" page-index="0">
-<!--		{% include 'msg_history.tmpl' %}-->
+			<div class="user_name" style="display: table-cell; text-align: right; line-height: 30px;">
+				<span >Я:</span>
+				<a href="#" id="userName" style="color: #FFF;" onclick="showUserInfoDialog(); return false;">
+					{{ userName }}
+				</a>
+			</div>
+		</div>
+
+		<div id="history" page-index="0">
+	<!--		{% include 'msg_history.tmpl' %}-->
+		</div>
 	</div>
-</div>
 
-<div>
-	<textarea id="msgField" style="margin: 5px;" class="editable_field" placeholder="Введите сообщение..."></textarea>	
-</div>
+	<div>
+		<textarea id="msgField" style="margin: 5px;" class="editable_field" placeholder="Введите сообщение..."></textarea>
+	</div>
 
-<div style="height: 20px">
-	<span id="status" ></span>
-</div>
-<div>
-<input  class="flat_button" type="button" id="btnSend" value="Отправить" disabled="disabled"/>
-</div>
+	<div style="height: 20px">
+		<span id="status" ></span>
+	</div>
+	<div>
+	<input  class="flat_button" type="button" id="btnSend" value="Отправить" disabled="disabled"/>
+	</div>
 </div>
 </div>
 
@@ -93,8 +100,44 @@
 <div>
 	<a href="auth\login.php?out=1">Выйти</a>
 </div>
+<script>
+	var userInfoDialog;
+	$(function() {
+		userInfoDialog = $('#userInfoDialog').dialog({autoOpen: false});
+
+
+	});
+	function showUserInfoDialog() {
+//		$('#userInfoDialog').dialog('open');
+		userInfoDialog.dialog('open');
+	}
+
+	function submitForm() {
+//		console.log("submit event");
+		var fd = new FormData(document.getElementById("avatar_form"));
+//		fd.append("label", "WEBUPLOAD");
+		$.ajax({
+			url: "upload.php",
+			type: "POST",
+			data: fd,
+			enctype: 'multipart/form-data',
+			processData: false,  // tell jQuery not to process the data
+			contentType: false   // tell jQuery not to set contentType
+		}).done(function( data ) {
+			/*console.log("PHP Output:");
+			console.log( data );*/
+			$($('#user_avatar')[0]).attr('src', data);
+		});
+		return false;
+	}
+
+	function simulateClick(id){
+		$('#'+ id).click();
+	}
+
+</script>
 <script type="text/javascript" src="js/script.js"></script>
- 
+
 </body>
 
 </html>
