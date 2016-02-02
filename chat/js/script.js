@@ -498,32 +498,18 @@ function getCookie(name) {
 	if (parts.length == 2) return parts.pop().split(";").shift();
 }
 
-/*
-function getRenderedHistory(pageIndex){
-
-	var fromUserId = getCurrentUserId();
-
-	var $activeUser = $('.active_user');
-	if ($activeUser.length > 0){
-		var $toUser = $($activeUser[0]);
-		var toUserId = $toUser.attr('id');
-	}
-
-	var data = {action: 'getRenderedHistory',
-				fromUser: fromUserId,
-				toUser: toUserId,
-				historyPageIndex: pageIndex};
-	var receivedData = '';
+function uploadAvatar() {
+	var fd = new FormData(document.getElementById("avatar_form"));
+	fd.append('userId', getCurrentUserId());
 	$.ajax({
-		type: 		'POST',
-		url: 		'history.php',
-		data: 		data,
-		async: 		false,
-		success:	function(data){
-					//	receivedData = JSON.parse(data);
-						receivedData = data;
-					}
-
+		url: "upload.php",
+		type: "POST",
+		data: fd,
+		enctype: 'multipart/form-data',
+		processData: false,  // tell jQuery not to process the data
+		contentType: false   // tell jQuery not to set contentType
+	}).done(function( data ) {
+		$($('#user_avatar')[0]).attr('src', data);
 	});
-	return receivedData;
-}*/
+	return false;
+}

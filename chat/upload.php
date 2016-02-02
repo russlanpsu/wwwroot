@@ -6,16 +6,14 @@ $allowedExts = array("gif", "jpeg", "jpg", "png");
 $temp = explode(".", $_FILES["file"]["name"]);
 $extension = strtolower(end($temp));
 
-//echo $_FILES["file"]["type"]; exit;
-
 if ((($_FILES["file"]["type"] == "image/gif")
-|| ($_FILES["file"]["type"] == "image/jpeg")
-|| ($_FILES["file"]["type"] == "image/jpg")
-|| ($_FILES["file"]["type"] == "image/pjpeg")
-|| ($_FILES["file"]["type"] == "image/x-png")
-|| ($_FILES["file"]["type"] == "image/png"))
-&& ($_FILES["file"]["size"] < 2000000)
-&& in_array($extension, $allowedExts)) {
+        || ($_FILES["file"]["type"] == "image/jpeg")
+        || ($_FILES["file"]["type"] == "image/jpg")
+        || ($_FILES["file"]["type"] == "image/pjpeg")
+        || ($_FILES["file"]["type"] == "image/x-png")
+        || ($_FILES["file"]["type"] == "image/png"))
+    && ($_FILES["file"]["size"] < 2000000)
+    && in_array($extension, $allowedExts)) {
     if ($_FILES["file"]["error"] > 0) {
         echo "Return Code: " . $_FILES["file"]["error"] . "<br>";
     } else {
@@ -30,10 +28,16 @@ if ((($_FILES["file"]["type"] == "image/gif")
         if (file_exists("uploads/" . $filename)) {
             echo $filename . " already exists. ";
         } else {
-			$newFileName = uniqid("img_") . "." . pathinfo($filename)["extension"];
-            move_uploaded_file($_FILES["file"]["tmp_name"], "img/" . $newFileName);
+
+            $userId = $_POST["userId"];
+			$newFileName = "img/" . uniqid("img_") . "." . $extension;
+            move_uploaded_file($_FILES["file"]["tmp_name"], $newFileName);
         //    echo "Stored in: " . "img/" . $filename;
-			echo "img/" . $newFileName;
+
+            include_once "utils.php";
+            setUserAvatarUrl($userId, $newFileName);
+
+			echo $newFileName;
         }
     }
 } else {

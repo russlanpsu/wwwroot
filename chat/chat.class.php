@@ -259,7 +259,8 @@ class Chat
         $sql = "SELECT
                     A.id,
                     name,
-                    (SELECT msg_text FROM messages WHERE id=last_id ) AS last_msg
+                    (SELECT msg_text FROM messages WHERE id=last_id ) AS last_msg,
+                    avatar_url
                 FROM users A
                 LEFT JOIN (SELECT from_user, max(id) AS last_id FROM messages
                             WHERE to_user=$excludeUserId

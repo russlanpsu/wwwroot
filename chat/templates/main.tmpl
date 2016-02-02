@@ -49,7 +49,7 @@
 
 <div id="userInfoDialog">
 	<form method="post" id="avatar_form" name="fileinfo">
-		<input type="file" name="file" id="file" required style="visibility:hidden;" onchange="return submitForm();"/>
+		<input type="file" name="file" id="file" required style="visibility:hidden;" onchange="return uploadAvatar();"/>
 		<!--   <input type="submit" value="Upload" /> -->
 	</form>
 	<img src="/chat/img/user.png" id="user_avatar" style="width: 64px;" onclick="simulateClick('file');return false;">
@@ -112,24 +112,7 @@
 		userInfoDialog.dialog('open');
 	}
 
-	function submitForm() {
-//		console.log("submit event");
-		var fd = new FormData(document.getElementById("avatar_form"));
-//		fd.append("label", "WEBUPLOAD");
-		$.ajax({
-			url: "upload.php",
-			type: "POST",
-			data: fd,
-			enctype: 'multipart/form-data',
-			processData: false,  // tell jQuery not to process the data
-			contentType: false   // tell jQuery not to set contentType
-		}).done(function( data ) {
-			/*console.log("PHP Output:");
-			console.log( data );*/
-			$($('#user_avatar')[0]).attr('src', data);
-		});
-		return false;
-	}
+
 
 	function simulateClick(id){
 		$('#'+ id).click();

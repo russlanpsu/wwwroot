@@ -1,7 +1,13 @@
 <ul id="user_list">
 {% for user in users %}
     <li class="user_item" id="{{ user.id }}" user-name="{{ user.name }}">
-        <img src="img\user2.png">
+
+        {% if user.avatar_url %}
+            <img src="{{user.avatar_url}}" style="width: 32px;">
+        {% else %}
+            <img src="img\user2.png" style="width: 32px;">
+        {% endif %}
+
         <span> {{ user.name }} </span><span class="msg_count"></span>
         <div class="last_msg">{{ user.last_msg }}</div>
     </li>
