@@ -43,8 +43,9 @@ if (isset($_COOKIE['id']) and isset($_COOKIE['hash']))
 
 		$chat = new Chat();
 		$users = $chat->getUsers($userdata['id']);
-		$context = array('users'=>$users,
-						'userName'=>$userdata['name']
+		$context = array("users"=>$users,
+						"userName"=>$userdata["name"],
+						"avatarUrl"=>$userdata["avatar_url"]
 		);
 
 		echo $template->render($context);

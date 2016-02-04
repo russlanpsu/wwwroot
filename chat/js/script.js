@@ -1,19 +1,27 @@
-var updateIntervalId;
 var msgIndex = 0;
 var $xhrUpdate;
-/*var updateRequestEnabled = false;
-
-
-function setIntervalUpdate(){
-	return setInterval(function(){
-		if (updateRequestEnabled) update();
-	}, 200);
-}*/
+var userInfoDialog;
 
 $(function(){
 
+	document.getElementById('avatar_file').addEventListener('change', handleFileSelect, false);
+
 	update(0);
 
+	userInfoDialog = $('#userInfoDialog').dialog({
+		autoOpen: false,
+		modal: false,
+		width: 400,
+		buttons:{
+			'OK': function(){
+				uploadAvatar();
+				$(this).dialog('close');
+			},
+			'Отмена': function(){
+				$(this).dialog('close');
+			}
+		}
+	});
 	$('.user_item').click(function(){
 
 		var curUserId = getCurrentUserId();
@@ -28,7 +36,6 @@ $(function(){
 			$($activeUser[0]).removeClass('active_user');
 		}
 
-
 		$this.addClass('active_user');
 		$this.find('.msg_count').html('');
 		//$this.find('.last_msg').html('');
@@ -37,13 +44,12 @@ $(function(){
 
 		getHistory();
 
-		if (!(updateIntervalId === undefined)){
-			clearInterval(updateIntervalId);
-		}
-	//	updateIntervalId = setIntervalUpdate();
-
 	})
-	
+
+	$('#user_list img').click(function(event){
+		userAvatarClick(event);
+	});
+
 	$('#btnSend').click(function(){
 		sendMessage();
 	})
@@ -170,48 +176,6 @@ function renderTemplate(tmplId, target, context, appendKind){
 	}
 }
 
-/*function CreateUsersList(users, excludedUserId){
-
-	if (excludedUserId === undefined){
-		excludedUserId = -1;
-	};
-
-	for (var i=0; i<users.length; i++){
-		if (excludedUserId == users[i].id){
-			users.splice(i, 1);
-			break;
-		}
-	}
-
-	var context = {users: users};
-
-	renderTemplate('tmpl_user_list', 'cont_user_list', context, 'insert');
-
-	$('.user_item').click(function(){
-
-		var $activeUser = $('.active_user');
-		if ($activeUser.length > 0){
-			$($activeUser[0]).removeClass('active_user');
-		};
-
-		var $this = $(this);
-		$this.addClass('active_user');
-		$this.html($this.attr('user-name'));
-
-		$('#history').attr('page-index', 0);
-
-		getHistory();
-
-		if (!(updateIntervalId === undefined)){
-			clearInterval(updateIntervalId);
-		}
-		updateIntervalId = setInterval(function(){update()}, 5000);
-
-	})
-
-};*/
-
-
 function sendMessage(){
 	var $msgField = $('#msgField');
 
@@ -298,7 +262,7 @@ function appendMessagesToHistory(messages, fromUserId, appendKind){
         renderTemplate('tmpl_msg_history', 'history', context, appendKind);
     }
     else{
-        $('#history').html('');
+        //$('#history').html('');
     }
 }
 
@@ -320,33 +284,9 @@ function updateIncomingMessagesCount(messagesCount){
 
 function getHistory(pageIndex){
 	var result;
-//	var $fromUser = $("#fromUser option:selected");
-//	var $toUser = $("#toUser option:selected");
 	var $toUser = $($('.active_user')[0]);
-
-//	var fromUserId = $fromUser.attr('id');
 	var fromUserId = getCurrentUserId();
-
 	var toUserId = $toUser.attr('id');
-
-	/*$.post('history.php',
-
-		{action: 'getHistory',
-			fromUser: fromUserId,
-			toUser: toUserId,
-			historyPageIndex: pageIndex},
-
-		function(data){
-			var history = JSON.parse(data);
-
-			history.forEach(function(msg){
-				msg.isOutcoming = (msg.from_user == fromUserId);
-			});
-
-			var context = {messages: history};
-			renderTemplate('tmpl_msg_history', 'history', context, 'before');
-
-		});*/
 
 	if (pageIndex === undefined){
 		pageIndex = 0;
@@ -368,9 +308,12 @@ function getHistory(pageIndex){
 		success: function(data) {
 			var messages = JSON.parse(data);
 
-			var appendKind = (pageIndex == 0) ? 'insert' : 'before';
-			appendMessagesToHistory(messages, fromUserId, appendKind);
-
+			if (messages.length > 0) {
+				var appendKind = (pageIndex == 0) ? 'insert' : 'before';
+				appendMessagesToHistory(messages, fromUserId, appendKind);
+			}else if (pageIndex == 0){
+				$('#history').html('');
+			}
 			result = (messages.length == 0);
 
 		}
@@ -400,7 +343,8 @@ function setMessagesReaded(msgIds){
 }
 
 function setUsersOnline(userIds){
-	$('.user_item').each(function(index, item){
+
+	/*$('.user_item').each(function(index, item){
 		var userId = item.getAttribute('id');
 		var $item = $(item);
 		if (userIds.indexOf(userId) == -1){
@@ -413,6 +357,16 @@ function setUsersOnline(userIds){
 				$item.addClass('user_online');
 				$item.removeClass('user_offline');
 			}
+		}
+	});*/
+	$('img.user_online').each(function(index, item){
+		var $item = $(item);
+		var userId = $item.closest('li').attr('id');
+		if (userIds.indexOf(userId) == -1){
+			$item.toggle(false);
+		}
+		else{
+			$item.toggle(true);
 		}
 	});
 }
@@ -512,4 +466,51 @@ function uploadAvatar() {
 		$($('#user_avatar')[0]).attr('src', data);
 	});
 	return false;
+}
+
+function userAvatarClick(event){
+	var id = $(event.currentTarget).closest("li").attr("id");
+	event.stopPropagation();
+	alert (id);
+
+	return false;
+}
+
+function showUserInfoDialog() {
+	userInfoDialog.dialog('open');
+}
+
+function simulateClick(id){
+	$('#'+ id).click();
+}
+
+function handleFileSelect(evt) {
+	var files = evt.target.files; // FileList object
+	var f = files[0];
+	// Loop through the FileList and render image files as thumbnails.
+//	for (var i = 0, f; f = files[i]; i++) {
+
+		// Only process image files.
+		if (!f.type.match('image.*')) {
+			//continue;
+		}
+
+		var reader = new FileReader();
+
+		// Closure to capture the file information.
+		reader.onload = (function(theFile) {
+			return function(e) {
+				// Render thumbnail.
+				/*var span = document.createElement('span');
+				span.innerHTML = ['<img class="thumb" src="', e.target.result,
+					'" title="', escape(theFile.name), '"/>'].join('');
+				document.getElementById('list').insertBefore(span, null);*/
+				$('#user_avatar').attr('src', e.target.result);
+
+			};
+		})(f);
+
+		// Read in the image file as a data URL.
+		reader.readAsDataURL(f);
+//	}
 }

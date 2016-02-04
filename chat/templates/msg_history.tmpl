@@ -11,8 +11,8 @@
         </div>
     {% else %}
         <div class="msg-wrapper left">
-        <div class="msg-text in_msg" msg-id="{{ msg.msg_id }}">{{ msg.msg_text }}</div>
-        <span class="date-caption">{{ msg.create_date }}</span></div>
-    </div>
+            <div class="msg-text in_msg" msg-id="{{ msg.msg_id }}">{{ msg.msg_text }}</div>
+            <span class="date-caption">{{ msg.create_date }}</span>
+        </div>
     {% endif %}
 {% endfor %}

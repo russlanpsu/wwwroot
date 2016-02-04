@@ -81,8 +81,15 @@ class Auth
 	}
 
 	public function getUserDataById($userId){
-		$sql = "SELECT * FROM users
-			WHERE id = '".intval($userId)."' LIMIT 1";
+		$sql = "SELECT
+ 					id,
+ 					name,
+ 					last_activity_date,
+ 					password,
+ 					hash,
+ 					avatar_url
+ 				FROM users
+				WHERE id = '".intval($userId)."' LIMIT 1";
 		$result = $this->mysqli->query($sql);
 		$userdata = mysqli_fetch_assoc($result);
 

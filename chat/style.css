@@ -63,13 +63,15 @@ ul{
     color: #2B587A;
 }
 
+/*
 .user_online{
-    /*!*list-style-type: circle*!*/
-    /*list-style-type: none;*/
-    /*padding-left: 5px;*/
+    /!*!*list-style-type: circle*!*!/
+    /!*list-style-type: none;*!/
+    /!*padding-left: 5px;*!/
     list-style-image: url('img/online.png');
     list-style-position:inside;
 }
+*/
 
 
 /*.user_offline:before{*/
@@ -214,11 +216,18 @@ ul{
 
 .user_item{
     background: #f2f5f7;
+    position:relative;
   /*  background-image: url('/chat/img/Online-icon.png');
     background-repeat: no-repeat;*/
     cursor: pointer;
     padding-left: 10px;
     height: 40px;
+}
+
+.user_online {
+    position: absolute;
+    left: -4px;
+    bottom: -4px;
 }
 
 .last_msg{

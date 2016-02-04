@@ -47,12 +47,15 @@
 	});
 </script>
 
-<div id="userInfoDialog">
+<div id="userInfoDialog" style="display:none;">
 	<form method="post" id="avatar_form" name="fileinfo">
-		<input type="file" name="file" id="file" required style="visibility:hidden;" onchange="return uploadAvatar();"/>
-		<!--   <input type="submit" value="Upload" /> -->
+		<input type="file" name="file" id="avatar_file" required style="display: none;"/>
 	</form>
-	<img src="/chat/img/user.png" id="user_avatar" style="width: 64px;" onclick="simulateClick('file');return false;">
+	{% if avatarUrl %}
+		<img src="{{ avatarUrl }}" id="user_avatar" style="width: 64px;" onclick="simulateClick('avatar_file');return false;">
+	{% else %}
+		<img src="img/user.png" id="user_avatar" style="width: 64px;" onclick="simulateClick('avatar_file');return false;">
+	{% endif %}
 </div>
 <div style="width: 800px;">
 
@@ -90,7 +93,7 @@
 		<span id="status" ></span>
 	</div>
 	<div>
-	<input  class="flat_button" type="button" id="btnSend" value="Отправить" disabled="disabled"/>
+		<input  class="flat_button" type="button" id="btnSend" value="Отправить" disabled="disabled"/>
 	</div>
 </div>
 </div>
@@ -100,25 +103,6 @@
 <div>
 	<a href="auth\login.php?out=1">Выйти</a>
 </div>
-<script>
-	var userInfoDialog;
-	$(function() {
-		userInfoDialog = $('#userInfoDialog').dialog({autoOpen: false});
-
-
-	});
-	function showUserInfoDialog() {
-//		$('#userInfoDialog').dialog('open');
-		userInfoDialog.dialog('open');
-	}
-
-
-
-	function simulateClick(id){
-		$('#'+ id).click();
-	}
-
-</script>
 <script type="text/javascript" src="js/script.js"></script>
 
 </body>
