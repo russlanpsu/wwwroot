@@ -454,10 +454,12 @@ function getCookie(name) {
 
 function uploadAvatar() {
 	var fd = new FormData(document.getElementById("avatar_form"));
+	/*var fd = new FormData();
+	fd.append('file', document.getElementById("avatar_file"));*/
 	fd.append('userId', getCurrentUserId());
 	$.ajax({
-		url: "upload.php",
-		type: "POST",
+		url: 'upload.php',
+		type: 'POST',
 		data: fd,
 		enctype: 'multipart/form-data',
 		processData: false,  // tell jQuery not to process the data
