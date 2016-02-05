@@ -1,16 +1,18 @@
 <ul id="user_list">
 {% for user in users %}
     <li class="user_item" id="{{ user.id }}" user-name="{{ user.name }}">
-        <div style="position: relative; display: inline-block;">
-
+        <div style="position: relative; display: inline-block; margin-top: 10px; width: 230px;">
+        {#<div style="position: relative; margin-top: 10px;">#}
             {% if user.avatar_url %}
                 <img src="{{user.avatar_url}}" class="user_img">
             {% else %}
                 <img src="img\user.png" class="user_img">
             {% endif %}
             <img src="img/online.png" class="user_online" style="display: none;">
-
-            <span class="user_caption"> {{ user.name }} </span><span class="msg_count"></span>
+            {#<img src="img\online.png" class="user_online">#}
+            <div style="display: inline;">
+                <span class="user_caption"> {{ user.name }} </span><span class="msg_count"></span>
+            </div>
             <div class="last_msg">{{ user.last_msg }}</div>
         </div>
     </li>

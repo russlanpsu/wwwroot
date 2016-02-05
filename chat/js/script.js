@@ -359,6 +359,7 @@ function setUsersOnline(userIds){
 			}
 		}
 	});*/
+	//return;
 	$('img.user_online').each(function(index, item){
 		var $item = $(item);
 		var userId = $item.closest('li').attr('id');

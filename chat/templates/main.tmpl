@@ -63,46 +63,49 @@
 		{% include 'user_list.tmpl' %}
 	</div>
 
-<div style="float: right;">
-	<div style="width: 500px;">
+	<div style="float: right; width: 50%;">
+		<div style="width: 500px; position:absolute; height: 100%;">
 
-		<div style="width: 100%; display: table; margin:5px; background: #6383a8; height: 30px;">
+			<div style="width: 100%; display: table; margin:5px; background: #6383a8; height: 30px;">
 
-		   <!-- <select id="toUser" style="display: table-cell; margin-top: 7px; margin-left: 5px;">
-				<option id="-1">&#45;&#45;</option>
-			</select>-->
+			   <!-- <select id="toUser" style="display: table-cell; margin-top: 7px; margin-left: 5px;">
+					<option id="-1">&#45;&#45;</option>
+				</select>-->
 
-			<div class="user_name" style="display: table-cell; text-align: right; line-height: 30px;">
-				<span >Я:</span>
-				<a href="#" id="userName" style="color: #FFF;" onclick="showUserInfoDialog(); return false;">
-					{{ userName }}
-				</a>
+				<div class="user_name" style="display: table-cell; text-align: right; line-height: 30px;">
+					<span >Я:</span>
+					<a href="#" id="userName" style="color: #FFF;" onclick="showUserInfoDialog(); return false;">
+						{{ userName }}
+					</a>
+				</div>
+			</div>
+
+			<div id="history" page-index="0">
+		<!--		{% include 'msg_history.tmpl' %}-->
+			</div>
+
+		</div>
+		<div style="height: 20%; position:absolute; top: 84%;">
+			<div>
+				<textarea id="msgField" style="margin: 5px;" class="editable_field" placeholder="Введите сообщение..."></textarea>
+			</div>
+
+			<div style="height: 20px">
+				<span id="status" ></span>
+			</div>
+			<div>
+				<input  class="flat_button" type="button" id="btnSend" value="Отправить" disabled="disabled"/>
+			</div>
+			<div>
+				<a href="auth\login.php?out=1">Выйти</a>
 			</div>
 		</div>
-
-		<div id="history" page-index="0">
-	<!--		{% include 'msg_history.tmpl' %}-->
-		</div>
 	</div>
-
-	<div>
-		<textarea id="msgField" style="margin: 5px;" class="editable_field" placeholder="Введите сообщение..."></textarea>
-	</div>
-
-	<div style="height: 20px">
-		<span id="status" ></span>
-	</div>
-	<div>
-		<input  class="flat_button" type="button" id="btnSend" value="Отправить" disabled="disabled"/>
-	</div>
-</div>
 </div>
 
 </div>
 
-<div>
-	<a href="auth\login.php?out=1">Выйти</a>
-</div>
+
 <script type="text/javascript" src="js/script.js"></script>
 
 </body>
