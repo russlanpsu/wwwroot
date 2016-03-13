@@ -33,7 +33,7 @@ a{
     margin: 5px;
     border: 1px solid black;
     width: 500px;
-    height: 80%;
+    height: 60%;
     overflow: auto;
     position: relative;
     background: #f2f5f7;
@@ -128,10 +128,12 @@ ul{
 
 .in_msg{
     background: #fff;
+    border: 1px solid lightgray;
 }
 
 .out_msg {
     background: #dae3ed;
+    border: 1px solid lightgray;
 }
 
 .unread_msg{
@@ -242,6 +244,7 @@ ul{
 .user_img{
     width: 32px;
     float: left;
+    border-radius: 50%;
 }
 
 .user_online {
